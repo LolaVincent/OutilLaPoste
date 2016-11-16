@@ -1,6 +1,9 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
+import os
 import csv
+from PIL import Image
+from fpdf import FPDF
 from collections import Counter
 import matplotlib.pyplot as plt # pour les graphes, faire sudo apt-get install python-matplotlib avant
 import numpy as np
@@ -114,5 +117,11 @@ def fromPNGToPDF(pdfFileName, listImages, dir = ''):
 
 
 """ FONCTION PRINCIPALE DE NOTRE PROGRAMME """
-reponse =readCSV()
+#reponse =readCSV()
+question = raw_input("Voulez vous inclure tous les PNG dans un seul dossier PDF ?")
+if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="oui"):
+	fromPNGToPDF("Résumé",listeImagesDossier("Graphiques/"),"Graphiques/")
+	print("PDF créé !")
+else :
+	print ("Rien ne sera effectué.")
 print("Fonction finie :) ")
