@@ -88,6 +88,31 @@ def showSiteGraph(sites) :
 		plt.close()
 
 
+""" Fonction pour mettre tous les fichiers d'un répertoire donné dans une liste """
+def listeImagesDossier(nomDossier) :
+	listeImages=list()
+	for element in os.listdir(nomDossier):
+		listeImages.append(element)
+	return listeImages
+
+"Fonction permettant d'afficher toutes les images dans un pdf"
+def fromPNGToPDF(pdfFileName, listImages, dir = ''):
+
+    if (dir):
+        dir += "/"
+
+    cover = Image.open(dir + str(listImages[0]) )
+    width, height = cover.size
+
+    pdf = FPDF(unit = "pt", format = [width, height])
+
+    for page in listImages:
+        pdf.add_page()
+        pdf.image(dir + str(page) , 0, 0)
+
+    pdf.output( pdfFileName + ".pdf", "F")
+
+
 """ FONCTION PRINCIPALE DE NOTRE PROGRAMME """
 reponse =readCSV()
 print("Fonction finie :) ")
