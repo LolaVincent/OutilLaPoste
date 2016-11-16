@@ -64,7 +64,7 @@ def showMotifGraph (bdd, sites, motif):
 	plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', shadow=False)
 	plt.axis('equal')
 	plt.title('nb_recla_motifs')
-	plt.savefig('nb_recla_motifs.png', fontsize='20')
+	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
 	plt.show()
 	plt.close()
 
@@ -83,7 +83,7 @@ def showSiteGraph(sites) :
 		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
  		plt.axis('equal')
 		plt.title('Nombre de réclamations par motifs pour '+site)
-		plt.savefig(site+'.png')
+		plt.savefig('Graphiques/'+site+'.png')
 		plt.show()
 		plt.close()
 
