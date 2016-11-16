@@ -117,7 +117,7 @@ def fromPNGToPDF(pdfFileName, listImages, dir = ''):
 
 
 """ FONCTION PRINCIPALE DE NOTRE PROGRAMME """
-#reponse =readCSV()
+reponse =readCSV()
 question = raw_input("Voulez vous inclure tous les PNG dans un seul dossier PDF ?")
 if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="oui"):
 	fromPNGToPDF("Résumé",listeImagesDossier("Graphiques/"),"Graphiques/")
