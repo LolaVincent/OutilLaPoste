@@ -1,91 +1,92 @@
-#!/usr/bin/python3.4
+#!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
 import csv
 from collections import Counter
 import matplotlib.pyplot as plt # pour les graphes, faire sudo apt-get install python-matplotlib avant
-import numpy as np			
+import numpy as np
 
 
 # Problème d'encodage
-import sys  
-reload(sys)  
+import sys
+reload(sys)
 sys.setdefaultencoding('utf8')
 
+""" fonction de lecture du CSV """
+def readCSV() :
+	nomFichier=input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
 
-with open('EXTRACTION SIEC AVRIL 2016.csv', 'rb') as csvfile:
-	bdd = csv.reader(csvfile, delimiter=';')
-	#print bdd.fieldnames
-	motif = []
-	
 
-	sites = {}
-	sites['compiegne'] = []
-	sites['noyon'] = []
-	sites['cuise'] = []
-	sites['thourotte'] = []
-	sites['venette'] = []
-	sites['ressons'] = []
-	sites['estrees'] = []
-		
-	
+	with open(nomFichier, 'rb') as csvfile:
+		bdd = csv.reader(csvfile, delimiter=';')
+		#print bdd.fieldnames
+
+
+		motif=[]
+		sites = {}
+		sites['compiegne'] = []
+		sites['noyon'] = []
+		sites['cuise'] = []
+		sites['thourotte'] = []
+		sites['venette'] = []
+		sites['ressons'] = []
+		sites['estrees'] = []
+		result = list()
+		result.append(bdd)
+		result.append(sites)
+		result.append(motif)
+
+		return result
+
+""" Calcul du nombre de réclamations par motif et affichage sur un même graphe """
+def showMotifGraph (bdd, sites, motif):
 	for row in bdd:
 		#print(row[13]) #Motifs de reclamation
 		if '' != row[13]: # enlever le motif vide
 			motif.append(row[13])
 
-		# Séparation des reclamations par site
-		for site in sites:
-			if str(site) in row[46].lower():
-				if '' != row[13]:
-					sites[site].append(row[13])
-
+			# Séparation des reclamations par site
+			for site in sites:
+				if str(site) in row[46].lower():
+					if '' != row[13]:
+						sites[site].append(row[13])
 
 	# Calcul du nombre de reclamation par motifs
-	
 	nb_recla_motifs = Counter(motif[1:len(motif)])
 	name = nb_recla_motifs.keys()
 
 	data = nb_recla_motifs.values()
-	
-	# Construction du camembert 
+	# Construction du camembert
 
 	explode= np.zeros(len(nb_recla_motifs))
 	plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', shadow=False)
- 	plt.axis('equal')
+	plt.axis('equal')
 	plt.title('nb_recla_motifs')
 	plt.savefig('nb_recla_motifs.png', fontsize='20')
 	plt.show()
 	plt.close()
 
-	# Calcul du nombre de réclamations par site + graphes 
-	
-	
+""" Calcul du nombre de réclamations par site et affichage des graphes pour chaque site dans un png
+"""
+
+def showSiteGraph(sites) :
 	for site in sites:
 		sites[site] = Counter(sites[site])
 		name = sites[site].keys()
 		data = sites[site].values()
-	
-		# Construction du camembert 
+
+		# Construction du camembert
 
 		explode = np.zeros(len(sites[site]))
-		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)	
+		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
  		plt.axis('equal')
 		plt.title('Nombre de réclamations par motifs pour '+site)
 		plt.savefig(site+'.png')
 		plt.show()
 		plt.close()
-		
-		
-		
-
-	
 
 
-	
-	
-	
-		
-
-
-	
-
+""" FONCTION PRINCIPALE DE NOTRE PROGRAMME """
+reponse =readCSV()
+showMotifGraph(reponse[0],reponse[1],reponse[2])
+showSiteGraph(reponse[1])
+print("Fonction finie :) ")
