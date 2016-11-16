@@ -35,7 +35,10 @@ def readCSV() :
 		result.append(sites)
 		result.append(motif)
 
-		return result
+		showMotifGraph(bdd,sites,motif)
+		showSiteGraph(sites)
+
+
 
 """ Calcul du nombre de réclamations par motif et affichage sur un même graphe """
 def showMotifGraph (bdd, sites, motif):
@@ -87,6 +90,4 @@ def showSiteGraph(sites) :
 
 """ FONCTION PRINCIPALE DE NOTRE PROGRAMME """
 reponse =readCSV()
-showMotifGraph(reponse[0],reponse[1],reponse[2])
-showSiteGraph(reponse[1])
 print("Fonction finie :) ")
