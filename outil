@@ -7,7 +7,8 @@ from fpdf import FPDF # Faire sudo pip install fpdf pour utiliser cette librairi
 from collections import Counter
 import matplotlib.pyplot as plt # pour les graphes, faire sudo apt-get install python-matplotlib avant
 import numpy as np
-
+from datetime import datetime
+from math import *
 
 # Problème d'encodage
 import sys
@@ -21,10 +22,18 @@ def readCSV() :
 
 	with open(nomFichier, 'rb') as csvfile:
 		bdd = csv.reader(csvfile, delimiter=';')
-		#print bdd.fieldnames
-
 
 		motif=[]
+
+		dates = {}
+		dates['compiegne'] = []
+		dates['noyon'] = []
+		dates['cuise'] = []
+		dates['thourotte'] = []
+		dates['venette'] = []
+		dates['ressons'] = []
+		dates['estrees'] = []
+
 		sites = {}
 		sites['compiegne'] = []
 		sites['noyon'] = []
@@ -33,28 +42,71 @@ def readCSV() :
 		sites['venette'] = []
 		sites['ressons'] = []
 		sites['estrees'] = []
-		result = list()
-		result.append(bdd)
-		result.append(sites)
-		result.append(motif)
+		liste_sites = ['compiegne', 'noyon', 'cuise', 'thourotte', 'venette', 'ressons', 'estrees']
 
-		showMotifGraph(bdd,sites,motif)
+		date_min_max = parcoursBDD(bdd, dates, sites, motif)
+		csvfile.seek(0)
+		semaines = calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+		showMotifGraph(motif)
 		showSiteGraph(sites)
+		showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], liste_sites)
 
 
-z
-""" Calcul du nombre de réclamations par motif et affichage sur un même graphe """
-def showMotifGraph (bdd, sites, motif):
+""" Parcours du fichier BDD et récupération des infos """
+def parcoursBDD(bdd, dates, sites, motif):
+
+	date_max = datetime.strptime("01/01/1900 01:01", '%d/%m/%Y %H:%M')
+	date_min = datetime.strptime("12/12/2020 00:00", '%d/%m/%Y %H:%M')
+	i = 0
 	for row in bdd:
-		#print(row[13]) #Motifs de reclamation
 		if '' != row[13]: # enlever le motif vide
+			i = i+1
 			motif.append(row[13])
-
-			# Séparation des reclamations par site
+		
+		if row[49] != 'Date de la demande':
+			date = datetime.strptime(row[49], '%d/%m/%Y %H:%M')
+			if date_max < date :
+				date_max = date
+			if date_min > date:
+				date_min = date
+			# Séparation des reclamations par site et ajout de la date
 			for site in sites:
 				if str(site) in row[46].lower():
 					if '' != row[13]:
 						sites[site].append(row[13])
+						dates[site].append([row[13], date, site])
+	return {'date_min':date_min, 'date_max':date_max}
+
+
+""" Détermination de la semaine du motif et par site """
+def calculNbSemaine(bdd, dates, date_min, date_max):
+	diff = date_max - date_min
+	nb_jours = diff.days
+	nb_semaines = int(ceil(nb_jours/7.0)) # arrondi supérieur
+
+	semaines = []
+	for i in range(1, nb_semaines+2):
+		lieux = {}
+		for site in dates:
+			lieux[site+str(i-1)] = [] #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+		semaines.append(lieux)
+
+	for rows in dates :
+		for row in dates[rows]:
+			diff_date = row[1] - date_min
+			semaine = int(ceil(diff_date.days/7.0))
+			semaines[semaine][rows+str(semaine)].append(row[0])
+	return {'semaines': semaines, 'nombre de semaines': nb_semaines}
+
+
+""" Initialisation d'un tableau de semaines avec dans chaque semaine les tableaux de chaque site,
+	parcours de dates, determination de la semaine ( diff entre date min puis division par 7 pour avoir la semaine et insertion dans le tableau """
+	
+						
+
+""" Calcul du nombre de réclamations par motif et affichage sur un même graphe """
+def showMotifGraph (motif):
+	
 
 	# Calcul du nombre de reclamation par motifs
 	nb_recla_motifs = Counter(motif[1:len(motif)])
@@ -76,13 +128,13 @@ def showMotifGraph (bdd, sites, motif):
 
 def showSiteGraph(sites) :
 	for site in sites:
-		sites[site] = Counter(sites[site])
-		name = sites[site].keys()
-		data = sites[site].values()
+		count_sites = Counter(sites[site])
+		name = count_sites.keys()
+		data = count_sites.values()
 
 		# Construction du camembert
 
-		explode = np.zeros(len(sites[site]))
+		explode = np.zeros(len(count_sites))
 		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
  		plt.axis('equal')
 		plt.title('Nombre de réclamations par motifs pour '+site)
@@ -90,6 +142,29 @@ def showSiteGraph(sites) :
 		plt.show()
 		plt.close()
 
+def showWeekSiteGraph(semaines, nb_semaines, liste_sites):
+	num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
+	while int(num_semaine) > nb_semaines:
+		print("Cette semaine n'est pas traitée dans le fichier")
+		num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
+		
+	for site in liste_sites :
+		if semaines[int(num_semaine)][site+num_semaine]:
+			count = Counter(semaines[int(num_semaine)][site+num_semaine])
+			name = count.keys()
+			data = count.values()
+
+			# Construction du camembert
+
+			explode = np.zeros(len(data))
+			plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
+	 		plt.axis('equal')
+			plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
+			plt.savefig('Graphiques/'+site+'-semaine.png')
+			plt.show()
+			plt.close()
+
+ 
 
 """ Fonction pour mettre tous les fichiers d'un répertoire donné dans une liste """
 def listeImagesDossier(nomDossier) :
