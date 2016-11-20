@@ -33,28 +33,28 @@ def readCSV() :
 		sites['venette'] = []
 		sites['ressons'] = []
 		sites['estrees'] = []
-		semaines = []
-		
-		parcoursBDD(bdd, sites, motif, semaines)
-		showMotifGraph(motif)
+		result = list()
+		result.append(bdd)
+		result.append(sites)
+		result.append(motif)
+
+		showMotifGraph(bdd,sites,motif)
 		showSiteGraph(sites)
 
-def parcoursBDD(bdd, sites, motif, semaines):
+
+z
+""" Calcul du nombre de réclamations par motif et affichage sur un même graphe """
+def showMotifGraph (bdd, sites, motif):
 	for row in bdd:
 		#print(row[13]) #Motifs de reclamation
 		if '' != row[13]: # enlever le motif vide
 			motif.append(row[13])
 
-		# Séparation des reclamations par site
-		for site in sites:
-			if str(site) in row[46].lower():
-				if '' != row[13]:
-					sites[site].append(row[13])
-						
-
-""" Calcul du nombre de réclamations par motif et affichage sur un même graphe """
-def showMotifGraph (motif):
-	
+			# Séparation des reclamations par site
+			for site in sites:
+				if str(site) in row[46].lower():
+					if '' != row[13]:
+						sites[site].append(row[13])
 
 	# Calcul du nombre de reclamation par motifs
 	nb_recla_motifs = Counter(motif[1:len(motif)])
