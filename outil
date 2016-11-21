@@ -62,7 +62,7 @@ def parcoursBDD(bdd, dates, sites, motif):
 		if '' != row[13]: # enlever le motif vide
 			i = i+1
 			motif.append(row[13])
-		
+
 		if row[49] != 'Date de la demande':
 			date = datetime.strptime(row[49], '%d/%m/%Y %H:%M')
 			if date_max < date :
@@ -101,12 +101,12 @@ def calculNbSemaine(bdd, dates, date_min, date_max):
 
 """ Initialisation d'un tableau de semaines avec dans chaque semaine les tableaux de chaque site,
 	parcours de dates, determination de la semaine ( diff entre date min puis division par 7 pour avoir la semaine et insertion dans le tableau """
-	
-						
+
+
 
 """ Calcul du nombre de réclamations par motif et affichage sur un même graphe """
 def showMotifGraph (motif):
-	
+
 
 	# Calcul du nombre de reclamation par motifs
 	nb_recla_motifs = Counter(motif[1:len(motif)])
@@ -147,7 +147,7 @@ def showWeekSiteGraph(semaines, nb_semaines, liste_sites):
 	while int(num_semaine) > nb_semaines:
 		print("Cette semaine n'est pas traitée dans le fichier")
 		num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
-		
+
 	for site in liste_sites :
 		if semaines[int(num_semaine)][site+num_semaine]:
 			count = Counter(semaines[int(num_semaine)][site+num_semaine])
@@ -164,13 +164,15 @@ def showWeekSiteGraph(semaines, nb_semaines, liste_sites):
 			plt.show()
 			plt.close()
 
- 
+
 
 """ Fonction pour mettre tous les fichiers d'un répertoire donné dans une liste """
 def listeImagesDossier(nomDossier) :
 	listeImages=list()
+	listeImages.append("0pageDeGarde.png")
 	for element in os.listdir(nomDossier):
-		listeImages.append(element)
+		if(element!="0pageDeGarde.png"):
+			listeImages.append(element)
 	return listeImages
 
 "Fonction permettant d'afficher toutes les images dans un pdf"
@@ -179,10 +181,12 @@ def fromPNGToPDF(pdfFileName, listImages, dir = ''):
     if (dir):
         dir += "/"
 
-    cover = Image.open(dir + str(listImages[0]) )
+    cover = Image.open(dir + "0pageDeGarde.png" )
     width, height = cover.size
 
+
     pdf = FPDF(unit = "pt", format = [width, height])
+
 
     for page in listImages:
         pdf.add_page()
