@@ -26,31 +26,79 @@ def readCSV() :
 		motif=[]
 
 		dates = {}
-		dates['compiegne'] = []
-		dates['noyon'] = []
-		dates['cuise'] = []
-		dates['thourotte'] = []
-		dates['venette'] = []
-		dates['ressons'] = []
-		dates['estrees'] = []
-
 		sites = {}
-		sites['compiegne'] = []
-		sites['noyon'] = []
-		sites['cuise'] = []
-		sites['thourotte'] = []
-		sites['venette'] = []
-		sites['ressons'] = []
-		sites['estrees'] = []
-		liste_sites = ['compiegne', 'noyon', 'cuise', 'thourotte', 'venette', 'ressons', 'estrees']
 
+		liste_sites = []
+
+		l_sites = csv.reader(open("liste_sites","rb"))
+		for row in l_sites:
+			liste_sites.append(row[0])
+
+		selection_sites = []
+
+		removeFiles()
+		ajoutSite(liste_sites)
+		supprimerSite(liste_sites)
+		selectionSites(liste_sites, sites, dates, selection_sites)
 		date_min_max = parcoursBDD(bdd, dates, sites, motif)
 		csvfile.seek(0)
 		semaines = calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
 		showMotifGraph(motif)
 		showSiteGraph(sites)
-		showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], liste_sites)
+		showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], selection_sites)
 
+# suppression des graphes dans le dossier
+def removeFiles():
+	path = "Graphiques"
+	files=os.listdir(path)
+	for x in files:
+		if not x in '0pageDeGarde.png':
+    			os.remove(path+'/'+x)
+
+# ajout d'un site dans le fichier et dans la liste courante
+def ajoutSite(liste_sites):
+	question = raw_input("Souhaitez-vous ajouter un site?")
+	if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
+		site = raw_input("Entrez le nom du site: ")
+		site = site.upper()
+		liste_sites.append(site)
+		c = csv.writer(open("liste_sites", "a"))
+		c.writerow([site])
+
+# suppression d'un site dans le fichier et dans la liste courante
+def supprimerSite(liste_sites):
+	question = raw_input("Souhaitez-vous supprimer un site?")
+	if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
+		site = raw_input("Entrez le nom du site: ")
+		site = site.upper()
+		fichier = open("liste_sites", "rb")
+		c_write = csv.writer(open("liste_sites_temp", "a"))
+		c_read = csv.reader(fichier, delimiter=';')
+
+		#ext ce que le site est présent dans la liste ?
+		while site not in liste_sites:
+			site = raw_input("Ce site n\'est pas présent dans la liste, entrez le nom du site: ")
+			site = site.upper()
+
+		#suppresion de la liste des sites sans relire le fichier
+		liste_sites.remove(site)
+
+		#ecriture de la nouvelle liste dans un fichier temporaire puis suppression
+		for row in c_read:
+			if site not in row[0]:
+				c_write.writerow(row)
+		os.remove("liste_sites")
+		os.renames("liste_sites_temp", "liste_sites")
+
+
+def selectionSites(liste_sites, sites, dates, selection_sites):
+	#ajout du site s'il est demandé
+	for site in liste_sites:
+		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
+		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
+			sites[site] = []
+			dates[site] = []
+			selection_sites.append(site)
 
 """ Parcours du fichier BDD et récupération des infos """
 def parcoursBDD(bdd, dates, sites, motif):
@@ -62,19 +110,20 @@ def parcoursBDD(bdd, dates, sites, motif):
 		if '' != row[13]: # enlever le motif vide
 			i = i+1
 			motif.append(row[13])
-
 		if row[49] != 'Date de la demande':
 			date = datetime.strptime(row[49], '%d/%m/%Y %H:%M')
+			# Détermination de la date max et de la date min
 			if date_max < date :
 				date_max = date
 			if date_min > date:
 				date_min = date
 			# Séparation des reclamations par site et ajout de la date
 			for site in sites:
-				if str(site) in row[46].lower():
+				if str(site) in row[46]:
 					if '' != row[13]:
 						sites[site].append(row[13])
 						dates[site].append([row[13], date, site])
+
 	return {'date_min':date_min, 'date_max':date_max}
 
 
@@ -107,7 +156,6 @@ def calculNbSemaine(bdd, dates, date_min, date_max):
 """ Calcul du nombre de réclamations par motif et affichage sur un même graphe """
 def showMotifGraph (motif):
 
-
 	# Calcul du nombre de reclamation par motifs
 	nb_recla_motifs = Counter(motif[1:len(motif)])
 	name = nb_recla_motifs.keys()
@@ -125,7 +173,6 @@ def showMotifGraph (motif):
 
 """ Calcul du nombre de réclamations par site et affichage des graphes pour chaque site dans un png
 """
-
 def showSiteGraph(sites) :
 	for site in sites:
 		count_sites = Counter(sites[site])
@@ -142,6 +189,7 @@ def showSiteGraph(sites) :
 		plt.show()
 		plt.close()
 
+# Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png 
 def showWeekSiteGraph(semaines, nb_semaines, liste_sites):
 	num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
 	while int(num_semaine) > nb_semaines:
@@ -163,6 +211,8 @@ def showWeekSiteGraph(semaines, nb_semaines, liste_sites):
 			plt.savefig('Graphiques/'+site+'-semaine.png')
 			plt.show()
 			plt.close()
+		else:
+			print("Il n'y a pas de réclamations pour "+site+" sur la semaine "+num_semaine)
 
 
 
@@ -198,8 +248,8 @@ def fromPNGToPDF(pdfFileName, listImages, dir = ''):
 """ FONCTION PRINCIPALE DE NOTRE PROGRAMME """
 reponse =readCSV()
 question = raw_input("Voulez vous inclure tous les PNG dans un seul dossier PDF ?")
-if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="oui"):
-	fromPNGToPDF("Résumé",listeImagesDossier("Graphiques/"),"Graphiques/")
+if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
+	fromPNGToPDF("Résumé",listeImagesDossier("Graphiques/"),"Graphiques")
 	print("PDF créé !")
 else :
 	print ("Rien ne sera effectué.")
