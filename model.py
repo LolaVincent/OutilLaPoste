@@ -18,7 +18,7 @@ sys.setdefaultencoding('utf8')
 
 class Model :
     def __init__(self) :
-        print("haha")
+        print("Le modèle est bien instancié")
 
     """ fonction de lecture du CSV """
 
@@ -27,6 +27,14 @@ class Model :
     	for element in os.listdir("FichiersCSV/"):
     		listeFichiers.append(element)
     	return listeFichiers
+
+    def readSites(self) :
+        liste_sites=list()
+        l_sites = csv.reader(open("liste_sites","rb"))
+        for row in l_sites:
+            liste_sites.append(row[0])
+        return liste_sites
+
 
 
     def readCSV(self) :

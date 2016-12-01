@@ -9,4 +9,4 @@ class Controller():
         self.model=Model()
         a=list()
         a.append("TEst")
-        self.vue=FenetrePrincipale(self.model.readDirectory())
+        self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites())
