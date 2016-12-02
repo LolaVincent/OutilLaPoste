@@ -9,4 +9,14 @@ class Controller():
         self.model=Model()
         a=list()
         a.append("TEst")
-        self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites())
+        self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
+        self.vue.bouton0.bind("<Button-1>",self.beginExtraction)
+
+
+    def run(self):
+        self.vue.fenetre.mainloop()
+
+
+    def beginExtraction(self,event):
+        print("HAHAHAHAHHAHA")
+        self.vue.model.readCSV(str(self.vue.fenetre.listeCSV.get()))

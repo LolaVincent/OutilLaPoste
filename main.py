@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 #from outil import *
-from vue import *
+
 from controller import *
 
 
 def main():
-    vue = Controller()
+    c = Controller()
+    c.run()
 
 
 if __name__ == '__main__':

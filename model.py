@@ -37,8 +37,8 @@ class Model :
 
 
 
-    def readCSV(self) :
-    	nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
+    def readCSV(self,nomFichier) :
+    #	nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
 
 
     	with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
@@ -58,15 +58,15 @@ class Model :
     		selection_sites = []
 
     		removeFiles()
-    		ajoutSite(liste_sites)
-    		supprimerSite(liste_sites)
-    		selectionSites(liste_sites, sites, dates, selection_sites)
+    	#	ajoutSite(liste_sites)
+    	#	supprimerSite(liste_sites)
+    	#	selectionSites(liste_sites, sites, dates, selection_sites)
     		date_min_max = parcoursBDD(bdd, dates, sites, motif)
     		csvfile.seek(0)
     		semaines = calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
     		showMotifGraph(motif)
     		showSiteGraph(sites)
-    		showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], selection_sites)
+    	#	showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], selection_sites)
 
     # suppression des graphes dans le dossier
     def removeFiles(self):

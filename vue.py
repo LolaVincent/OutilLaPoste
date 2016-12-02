@@ -5,10 +5,11 @@ from Tkinter import *
 from ttk import *
 
 class FenetrePrincipale :
-    def __init__(self,listeFichiers,listeSites):
+    def __init__(self,listeFichiers,listeSites,controller):
         print('Constructiion dut truc')
         self.fenetre = Tk()
-        self.fenetre.configure(bg="white")
+        self.controller=controller
+        #self.fenetre.configure(bg="white")
         self.fenetre.minsize(900,600)
         self.fenetre.wm_title("Outil La Poste")
         self.menubar = Menu(self.fenetre)
@@ -92,4 +93,3 @@ class FenetrePrincipale :
 
 
         self.fenetre.config(menu=self.menubar)
-        self.fenetre.mainloop()
