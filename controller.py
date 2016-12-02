@@ -19,4 +19,4 @@ class Controller():
 
     def beginExtraction(self,event):
         print("HAHAHAHAHHAHA")
-        self.vue.model.readCSV(str(self.vue.fenetre.listeCSV.get()))
+        self.model.readCSV(str(self.vue.listeCSV.get()))

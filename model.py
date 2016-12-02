@@ -57,15 +57,15 @@ class Model :
 
     		selection_sites = []
 
-    		removeFiles()
+    		self.removeFiles()
     	#	ajoutSite(liste_sites)
     	#	supprimerSite(liste_sites)
     	#	selectionSites(liste_sites, sites, dates, selection_sites)
-    		date_min_max = parcoursBDD(bdd, dates, sites, motif)
+    		date_min_max = self.parcoursBDD(bdd, dates, sites, motif)
     		csvfile.seek(0)
-    		semaines = calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
-    		showMotifGraph(motif)
-    		showSiteGraph(sites)
+    		semaines = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+    		self.showMotifGraph(motif)
+    		self.showSiteGraph(sites)
     	#	showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], selection_sites)
 
     # suppression des graphes dans le dossier
