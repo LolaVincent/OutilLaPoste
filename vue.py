@@ -3,6 +3,8 @@
 
 from Tkinter import *
 from ttk import *
+from tkMessageBox import *
+
 
 class FenetrePrincipale :
     def __init__(self,listeFichiers,listeSites,controller):
@@ -100,3 +102,8 @@ class FenetrePrincipale :
 
 
         self.fenetre.config(menu=self.menubar)
+
+
+
+
+        

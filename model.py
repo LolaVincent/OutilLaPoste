@@ -195,9 +195,9 @@ class Model :
     	plt.title('Nombre de réclamations par motif')
     	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
         print("On est à la fin de showmotifgraph juste avant le show")
-    	plt.show()
+    #	plt.show()
         print("On est à la fin de showmotifgraph juste avant le close")
-    	plt.close()
+    #	plt.close()
         print("On est à la fin de showmotifgraph juste après le close")
 
 
@@ -217,8 +217,8 @@ class Model :
      		plt.axis('equal')
     		plt.title('Nombre de réclamations par motifs pour '+site)
     		plt.savefig('Graphiques/'+site+'.png')
-    		plt.show()
-    		plt.close()
+    	#	plt.show()
+    	#	plt.close()
 
     # Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
     def showWeekSiteGraph(self,semaines, nb_semaines, liste_sites):
