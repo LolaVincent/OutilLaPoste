@@ -79,10 +79,17 @@ class FenetrePrincipale :
         self.l = LabelFrame(self.fenetre, text="Liste des sites")
         self.l.grid()
         self.listCheckButton=list()
+        self.listVariableCheckButton=list()
+        self.listTextCheckButton=list()
         i=0
         for element in listeSites:
-            bouton = Checkbutton(self.l, text=str(element))
+            variable_i=BooleanVar()
+            bouton = Checkbutton(self.l, text=str(element), variable=variable_i)
             bouton.grid(row=i)
+            self.listVariableCheckButton.append(variable_i)
+            self.listTextCheckButton.append(str(element))
+            self.listCheckButton.append(bouton)
+
             i=i+1
 
         self.bouton1=Button(self.l, text="Ajouter site")

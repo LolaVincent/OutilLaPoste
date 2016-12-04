@@ -19,6 +19,8 @@ sys.setdefaultencoding('utf8')
 class Model :
     def __init__(self) :
         print("Le modèle est bien instancié")
+        self.listeSitesCoches=list()
+
 
     """ fonction de lecture du CSV """
 
@@ -37,8 +39,9 @@ class Model :
 
 
 
-    def readCSV(self,nomFichier) :
+    def readCSV(self,nomFichier,listeSitesCoches) :
     #	nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
+        self.listeSitesCoches=listeSitesCoches
 
 
     	with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
@@ -51,6 +54,7 @@ class Model :
 
     		liste_sites = []
 
+
     		l_sites = csv.reader(open("liste_sites","rb"))
     		for row in l_sites:
     			liste_sites.append(row[0])
@@ -60,7 +64,7 @@ class Model :
     		self.removeFiles()
     	#	ajoutSite(liste_sites)
     	#	supprimerSite(liste_sites)
-    	#	selectionSites(liste_sites, sites, dates, selection_sites)
+    		self.selectionSites(liste_sites, sites, dates, selection_sites)
     		date_min_max = self.parcoursBDD(bdd, dates, sites, motif)
     		csvfile.seek(0)
     		semaines = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
@@ -114,9 +118,9 @@ class Model :
 
     def selectionSites(self,liste_sites, sites, dates, selection_sites):
     	#ajout du site s'il est demandé
-    	for site in liste_sites:
-    		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
-    		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
+    	for site in self.listeSitesCoches:
+    #		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
+    #		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
     			sites[site] = []
     			dates[site] = []
     			selection_sites.append(site)
@@ -176,6 +180,7 @@ class Model :
 
     """ Calcul du nombre de réclamations par motif et affichage sur un même graphe """
     def showMotifGraph (self,motif):
+        print("HAHAHAHAH On est dans le code de Show Motif graph motherfucker")
 
     	# Calcul du nombre de reclamation par motifs
     	nb_recla_motifs = Counter(motif[1:len(motif)])
@@ -187,14 +192,19 @@ class Model :
     	explode= np.zeros(len(nb_recla_motifs))
     	plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', shadow=False)
     	plt.axis('equal')
-    	plt.title('nb_recla_motifs')
+    	plt.title('Nombre de réclamations par motif')
     	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
+        print("On est à la fin de showmotifgraph juste avant le show")
     	plt.show()
+        print("On est à la fin de showmotifgraph juste avant le close")
     	plt.close()
+        print("On est à la fin de showmotifgraph juste après le close")
+
 
     """ Calcul du nombre de réclamations par site et affichage des graphes pour chaque site dans un png
     """
     def showSiteGraph(self,sites) :
+        print("HAHAHAH on est dans le code de ShowShiteGraph")
     	for site in sites:
     		count_sites = Counter(sites[site])
     		name = count_sites.keys()
