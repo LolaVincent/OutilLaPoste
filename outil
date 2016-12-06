@@ -55,14 +55,18 @@ def readCSV() :
 		nb_mois= nb['nb_mois']
 
 		# Calcul des indicateurs 
-		#motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
-		#motif_site_semaine = motif_site['motif_site_semaine']
-		#motif_site_mois = motif_site['motif_site_mois']
-			
+				
+		
+		motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
+		motif_site_semaine = motif_site['motif_site_semaine']
+		motif_site_mois = motif_site['motif_site_mois']
+		
+		nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
 		tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
 
 		tournee_site_semaine = tournee_site['tournee_site_semaine']
 		tournee_site_mois = tournee_site['tournee_site_mois']
+
 			
 
 		#choix de la semaine
@@ -70,8 +74,9 @@ def readCSV() :
 
 		# Creation des graphes
 		showMotifGraph(motif)
+		showNbReclaSemaineGraph(nb_motif_semaine)
 		showSiteGraph(sites)
-		#showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
+		showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
 		showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
 
 # suppression des graphes dans le dossier
@@ -163,6 +168,8 @@ def calculNbSemaine(date_min, date_max):
 	nb_jours = diff.days
 	nb_semaines = int(ceil(nb_jours/7.0)) # arrondi supérieur
 	nb_mois = date_max.month - date_min.month + 1
+	print nb_semaines
+	print nb_mois
 	return {'nb_semaines':nb_semaines, 'nb_mois': nb_mois}
 
 
@@ -224,6 +231,16 @@ def tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, tournee_site_d
 	return {'tournee_site_semaine': tournee_site_semaine, 'tournee_site_mois': tournee_site_mois}
 
 
+def nbReclaSemaine(motif_site_semaine, nb_semaine):
+	nb_motif_semaine = {}
+	for i in range(1, nb_semaine+1):
+		print i
+		somme = 0
+		for site in motif_site_semaine[i]:
+			somme = somme + len(motif_site_semaine[i][site])
+		nb_motif_semaine['semaine '+str(i)] = somme
+	return nb_motif_semaine
+
 def choixSemaineMois(nb_semaine):
 	intervalle = raw_input('Souhaitez-vous les indicateurs par semaine (1) ou par mois (2) ?')
 	num = {}
@@ -259,6 +276,30 @@ def showMotifGraph (motif):
 	plt.axis('equal')
 	plt.title('nb_recla_motifs')
 	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
+	plt.show()
+	plt.close()
+
+
+
+def showNbReclaSemaineGraph(nb_recla_semaine):
+
+	# Calcul du nombre de reclamation par motifs
+	nb_recla= Counter(nb_recla_semaine)
+	name = nb_recla.keys()
+
+	data = nb_recla.values()
+	# Construction du camembert
+
+	labels = name
+	values = data 
+	indexes = np.arange(len(labels))
+	width = 1
+	plt.bar(indexes, values, width, color='rgbkymc')
+	plt.xticks(indexes + width * 0.5, labels)
+	plt.axis('equal')
+
+	plt.title('nombre de réclamations par semaine')
+	plt.savefig('Graphiques/' + 'nb_recla_semaine.png', fontsize='20')
 	plt.show()
 	plt.close()
 
@@ -343,14 +384,13 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 			# Construction du camembert
 		labels = name
 		values = data 
-#zip(*Counter(['A','B','A','C','A','A']).items())
 
 		indexes = np.arange(len(labels))
 		width = 1
 
-		plt.bar(indexes, values, width)
+		plt.bar(indexes, values, width, color='rgbkymc')
 		plt.xticks(indexes + width * 0.5, labels)
- 		#plt.axis('equal')
+ 		plt.axis('equal')
 		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
 		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
 		plt.show()
