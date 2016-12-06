@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import csv
+import re
 from PIL import Image # Faire sudo pip install pillow pour utiliser cette librairie
 from fpdf import FPDF # Faire sudo pip install fpdf pour utiliser cette librairie
 from collections import Counter
@@ -22,30 +23,56 @@ def readCSV() :
 
 	with open(nomFichier, 'rb') as csvfile:
 		bdd = csv.reader(csvfile, delimiter=';')
-
-		motif=[]
-
-		dates = {}
-		sites = {}
+		
 
 		liste_sites = []
+		selection_site = []
 
+		motif=[]
+		sites = {}
+		motif_site_date = {}
+		tournee_site_date = {}
+
+		#suppression des graphes dans le dossier	
+		removeFiles()
+
+		# lecture de la liste des sites
 		l_sites = csv.reader(open("liste_sites","rb"))
 		for row in l_sites:
 			liste_sites.append(row[0])
 
-		selection_sites = []
+		# Gestion des sites
+		#ajoutSite(liste_sites)
+		#supprimerSite(liste_sites)
+		selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site)
 
-		removeFiles()
-		ajoutSite(liste_sites)
-		supprimerSite(liste_sites)
-		selectionSites(liste_sites, sites, dates, selection_sites)
-		date_min_max = parcoursBDD(bdd, dates, sites, motif)
-		csvfile.seek(0)
-		semaines = calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+		# détermination des dates min et max et du nombre de semaines
+		#lecture du csv : lecture des motifs, separation par site
+		date_min_max = parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
+		mois_min = date_min_max['date_min'].month
+		nb = calculNbSemaine(date_min_max['date_min'], date_min_max['date_max'])
+		nb_semaine = nb['nb_semaines']
+		nb_mois= nb['nb_mois']
+
+		# Calcul des indicateurs 
+		#motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
+		#motif_site_semaine = motif_site['motif_site_semaine']
+		#motif_site_mois = motif_site['motif_site_mois']
+			
+		tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
+
+		tournee_site_semaine = tournee_site['tournee_site_semaine']
+		tournee_site_mois = tournee_site['tournee_site_mois']
+			
+
+		#choix de la semaine
+		num_semaine_mois = choixSemaineMois(nb_semaine)
+
+		# Creation des graphes
 		showMotifGraph(motif)
 		showSiteGraph(sites)
-		showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], selection_sites)
+		#showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
+		showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
 
 # suppression des graphes dans le dossier
 def removeFiles():
@@ -56,7 +83,7 @@ def removeFiles():
     			os.remove(path+'/'+x)
 
 # ajout d'un site dans le fichier et dans la liste courante
-def ajoutSite(liste_sites):
+"""def ajoutSite(liste_sites):
 	question = raw_input("Souhaitez-vous ajouter un site?")
 	if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
 		site = raw_input("Entrez le nom du site: ")
@@ -88,20 +115,22 @@ def supprimerSite(liste_sites):
 			if site not in row[0]:
 				c_write.writerow(row)
 		os.remove("liste_sites")
-		os.renames("liste_sites_temp", "liste_sites")
+		os.renames("liste_sites_temp", "liste_sites")"""
 
-
-def selectionSites(liste_sites, sites, dates, selection_sites):
+def selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site):
 	#ajout du site s'il est demandé
 	for site in liste_sites:
 		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
 		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
 			sites[site] = []
-			dates[site] = []
-			selection_sites.append(site)
+			motif_site_date[site] = []
+			tournee_site_date[site] = []
+			selection_site.append(site)
+
+
 
 """ Parcours du fichier BDD et récupération des infos """
-def parcoursBDD(bdd, dates, sites, motif):
+def parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif):
 
 	date_max = datetime.strptime("01/01/1900 01:01", '%d/%m/%Y %H:%M')
 	date_min = datetime.strptime("12/12/2020 00:00", '%d/%m/%Y %H:%M')
@@ -122,36 +151,98 @@ def parcoursBDD(bdd, dates, sites, motif):
 				if str(site) in row[46]:
 					if '' != row[13]:
 						sites[site].append(row[13])
-						dates[site].append([row[13], date, site])
-
+						motif_site_date[site].append([row[13], date])
+					if '' != row[47]:
+						tournee_site_date[site].append([row[47], date])
 	return {'date_min':date_min, 'date_max':date_max}
 
 
 """ Détermination de la semaine du motif et par site """
-def calculNbSemaine(bdd, dates, date_min, date_max):
+def calculNbSemaine(date_min, date_max):
 	diff = date_max - date_min
 	nb_jours = diff.days
 	nb_semaines = int(ceil(nb_jours/7.0)) # arrondi supérieur
+	nb_mois = date_max.month - date_min.month + 1
+	return {'nb_semaines':nb_semaines, 'nb_mois': nb_mois}
 
-	semaines = []
-	for i in range(1, nb_semaines+2):
-		lieux = {}
-		for site in dates:
-			lieux[site+str(i-1)] = [] #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
-		semaines.append(lieux)
 
-	for rows in dates :
-		for row in dates[rows]:
+def motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, motif_site_date):
+	motif_site_semaine = []
+	motif_site_mois = []
+	for i in range(1, nb_semaine+2):
+		motif_lieu = {}
+		for site in motif_site_date:
+			motif_lieu[site+str(i-1)] = [] 
+#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+		motif_site_semaine.append(motif_lieu)
+	
+	for i in range(1, nb_mois+2):
+		motif_lieu = {}
+		for site in motif_site_date:
+			motif_lieu[site+str(i-1)] = [] 
+#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+		motif_site_mois.append(motif_lieu)
+	
+
+	for rows in motif_site_date :
+		for row in motif_site_date[rows]:
 			diff_date = row[1] - date_min
-			semaine = int(ceil(diff_date.days/7.0))
-			semaines[semaine][rows+str(semaine)].append(row[0])
-	return {'semaines': semaines, 'nombre de semaines': nb_semaines}
+			semaine = int(ceil((diff_date.days + 1)/7.0))
+			motif_site_semaine[semaine][rows+str(semaine)].append(row[0])
+			mois = row[1].month - mois_min + 1
+			motif_site_mois[mois][rows+str(mois)].append(row[0])
+	return {'motif_site_semaine': motif_site_semaine, 'motif_site_mois': motif_site_mois}
 
 
 """ Initialisation d'un tableau de semaines avec dans chaque semaine les tableaux de chaque site,
 	parcours de dates, determination de la semaine ( diff entre date min puis division par 7 pour avoir la semaine et insertion dans le tableau """
 
+def tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, tournee_site_date):
+	tournee_site_semaine = []
+	tournee_site_mois = []
+	for i in range(1, nb_semaine+2):
+		tournee_lieu = {}
+		for site in tournee_site_date:
+			tournee_lieu[site+str(i-1)] = [] 
+#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+		tournee_site_semaine.append(tournee_lieu)
+	
+	for i in range(1, nb_mois+2):
+		tournee_lieu = {}
+		for site in tournee_site_date:
+			tournee_lieu[site+str(i-1)] = [] 
+#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+		tournee_site_mois.append(tournee_lieu)
 
+	for rows in tournee_site_date :
+		for row in tournee_site_date[rows]:
+			diff_date = row[1] - date_min
+			semaine = int(ceil((diff_date.days + 1)/7.0))
+			tournee_site_semaine[semaine][rows+str(semaine)].append(row[0])
+			mois = row[1].month - mois_min + 1
+			tournee_site_mois[mois][rows+str(mois)].append(row[0])
+	return {'tournee_site_semaine': tournee_site_semaine, 'tournee_site_mois': tournee_site_mois}
+
+
+def choixSemaineMois(nb_semaine):
+	intervalle = raw_input('Souhaitez-vous les indicateurs par semaine (1) ou par mois (2) ?')
+	num = {}
+	if intervalle == '1':
+		num['semaine'] = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
+		if re.search('d*-d*', num['semaine']):
+			print num['semaine']
+			num['semaine'] = num['semaine'].split("-")
+			while int(num['semaine'][1]) > nb_semaine:
+				print("Cette semaine n'est pas traitée dans le fichier")
+				num['semaine'] = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
+		else:
+			while int(num['semaine']) > nb_semaine:
+				print("Cette semaine n'est pas traitée dans le fichier")
+				num['semaine'] = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
+	
+	elif intervalle == '2':
+		num['mois'] = raw_input('Pour quel mois souhaitez-vous voir les indicateurs ?')
+	return num
 
 """ Calcul du nombre de réclamations par motif et affichage sur un même graphe """
 def showMotifGraph (motif):
@@ -190,30 +281,80 @@ def showSiteGraph(sites) :
 		plt.close()
 
 # Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png 
-def showWeekSiteGraph(semaines, nb_semaines, liste_sites):
-	num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
-	while int(num_semaine) > nb_semaines:
-		print("Cette semaine n'est pas traitée dans le fichier")
-		num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
 
-	for site in liste_sites :
-		if semaines[int(num_semaine)][site+num_semaine]:
-			count = Counter(semaines[int(num_semaine)][site+num_semaine])
-			name = count.keys()
-			data = count.values()
+def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois):
+	for site in selection_site:
+		if num_semaine_mois.keys()[0] == 'semaine':
+			if type(num_semaine_mois.values()[0]) == type(list()):
+				semaines = {}
+				semaines[site] = []
+				for i in range(int(num_semaine_mois.values()[0][0]), int(num_semaine_mois.values()[0][1])):
+					for motif in motif_site_semaine[i][site+str(i)]:
+						semaines[site].append(motif)
+				count = Counter(semaines[site])
+				name = count.keys()
+				data = count.values()
+	
+			elif motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]:
+					count = Counter(motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']])
+					name = count.keys()
+					data = count.values()
+		elif num_semaine_mois.keys()[0] == 'mois':
+			if motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
+					count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
+					name = count.keys()
+					data = count.values()
+			
 
 			# Construction du camembert
 
-			explode = np.zeros(len(data))
-			plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
-	 		plt.axis('equal')
-			plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
-			plt.savefig('Graphiques/'+site+'-semaine.png')
-			plt.show()
-			plt.close()
-		else:
-			print("Il n'y a pas de réclamations pour "+site+" sur la semaine "+num_semaine)
+		explode = np.zeros(len(data))
+		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
+	 	plt.axis('equal')
+		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
+		plt.savefig('Graphiques/motif-'+site+'-semaine.png')
+		plt.show()
+		plt.close()
 
+def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois):
+	for site in selection_site:
+		if num_semaine_mois.keys()[0] == 'semaine':
+			if type(num_semaine_mois.values()[0]) == type(list()):
+				semaines = {}
+				semaines[site] = []
+				for i in range(int(num_semaine_mois.values()[0][0]), int(num_semaine_mois.values()[0][1])):
+					for tournee in tournee_site_semaine[i][site+str(i)]:
+						semaines[site].append(tournee)
+				count = Counter(semaines[site])
+				name = count.keys()
+				data = count.values()
+	
+			elif tournee_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]:
+					count = Counter(tournee_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']])
+					name = count.keys()
+					data = count.values()
+		elif num_semaine_mois.keys()[0] == 'mois':
+			if motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
+				count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
+				name = count.keys()
+				data = count.values()
+
+
+			# Construction du camembert
+		labels = name
+		values = data 
+#zip(*Counter(['A','B','A','C','A','A']).items())
+
+		indexes = np.arange(len(labels))
+		width = 1
+
+		plt.bar(indexes, values, width)
+		plt.xticks(indexes + width * 0.5, labels)
+ 		#plt.axis('equal')
+		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
+		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
+		plt.show()
+		plt.close()
 
 
 """ Fonction pour mettre tous les fichiers d'un répertoire donné dans une liste """
