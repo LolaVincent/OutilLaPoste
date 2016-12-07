@@ -10,7 +10,7 @@ class Controller():
         a=list()
         a.append("TEst")
         self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
-    #    self.vue.bouton0.bind("<Button-1>",self.beginExtraction)
+        self.vue.bouton0.bind("<Button-1>",self.beginExtraction)
 
 
     def run(self):

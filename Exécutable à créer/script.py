@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from Tkinter import *
+from tkinter import *
 
 fenetre = Tk()
 fenetre.minsize(900,600)

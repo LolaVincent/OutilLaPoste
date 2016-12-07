@@ -1,10 +1,5 @@
 
-from cx_Freeze import setup, Executable
-
-# On appelle la fonction setup
-setup(
-    name = "ProgrammeTest",
-    version = "1",
-    description = "Votre programme test",
-    executables = [Executable("script.py")],
-)
+import tkinter
+from distutils.core import setup
+import py2exe
+setup(console=['script.py'])

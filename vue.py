@@ -104,6 +104,6 @@ class FenetrePrincipale :
         self.fenetre.config(menu=self.menubar)
 
 
-
-
-        
+    def callback(self, numeroAction):
+        if numeroAction==1:
+            showinfo('Message de confirmation', 'Le traitement du fichier a bien été effectué !')
