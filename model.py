@@ -39,6 +39,8 @@ class Model :
 
 
 
+
+
     def readCSV(self,nomFichier,listeSitesCoches) :
     #	nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
         self.listeSitesCoches=listeSitesCoches
@@ -49,10 +51,11 @@ class Model :
 
     		motif=[]
 
-    		dates = {}
+    		motif_site_date = {}
     		sites = {}
 
     		liste_sites = []
+            tournee_site_date={}
 
 
     		l_sites = csv.reader(open("liste_sites","rb"))
@@ -64,13 +67,60 @@ class Model :
     		self.removeFiles()
     	#	ajoutSite(liste_sites)
     	#	supprimerSite(liste_sites)
-    		self.selectionSites(liste_sites, sites, dates, selection_sites)
-    		date_min_max = self.parcoursBDD(bdd, dates, sites, motif)
+    		self.selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_sites)
+    		date_min_max = self.parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
+            mois_min = date_min_max['date_min'].month
     		csvfile.seek(0)
-    		semaines = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+    		nb = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+            nb_semaine = nb['nb_semaines']
+    		nb_mois= nb['nb_mois']
+
+		    # Calcul des indicateurs
+
+
+		    motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
+		    motif_site_semaine = motif_site['motif_site_semaine']
+	        motif_site_mois = motif_site['motif_site_mois']
+
+	        nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
+	        tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
+
+	        tournee_site_semaine = tournee_site['tournee_site_semaine']
+	        tournee_site_mois = tournee_site['tournee_site_mois']
+
+
+
+		    #choix de la semaine
+            print("LIS CE QU'IL Y A ICI JUSTE EN BAS DE CE COMMENTAIRE")
+            #ici on récupère un dico faudra bien faire attention à comment le récupérer avec tes MessageBox
+		    #num_semaine_mois = choixSemaineMois(nb_semaine)
+
+            
     		self.showMotifGraph(motif)
+            self.showNbReclaSemaineGraph(nb_motif_semaine)
     		self.showSiteGraph(sites)
-    	#	showWeekSiteGraph(semaines['semaines'], semaines['nombre de semaines'], selection_sites)
+            #showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
+    		#showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
+
+    def showNbReclaSemaineGraph(nb_recla_semaine):
+
+    	# Calcul du nombre de reclamation par motifs
+    	nb_recla= Counter(nb_recla_semaine)
+    	name = nb_recla.keys()
+
+    	data = nb_recla.values()
+    	# Construction du camembert
+
+    	labels = name
+    	values = data
+    	indexes = np.arange(len(labels))
+    	width = 1
+    	plt.bar(indexes, values, width, color='rgbkymc')
+    	plt.xticks(indexes + width * 0.5, labels)
+    	plt.axis('equal')
+
+    	plt.title('nombre de réclamations par semaine')
+    	plt.savefig('Graphiques/' + 'nb_recla_semaine.png', fontsize='20')
 
     # suppression des graphes dans le dossier
     def removeFiles(self):
@@ -116,17 +166,18 @@ class Model :
     		os.renames("liste_sites_temp", "liste_sites")
 
 
-    def selectionSites(self,liste_sites, sites, dates, selection_sites):
+    def selectionSites(self,liste_sites, sites, motif_site_date, tournee_site_date, selection_sites):
     	#ajout du site s'il est demandé
     	for site in self.listeSitesCoches:
     #		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
     #		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
     			sites[site] = []
-    			dates[site] = []
+    			tournee_site_date[site] = []
+                motif_site_date[site]=[]
     			selection_sites.append(site)
 
     """ Parcours du fichier BDD et récupération des infos """
-    def parcoursBDD(self,bdd, dates, sites, motif):
+    def parcoursBDD(self,bdd, sites, motif_site_date, tournee_site_date, motif):
 
     	date_max = datetime.strptime("01/01/1900 01:01", '%d/%m/%Y %H:%M')
     	date_min = datetime.strptime("12/12/2020 00:00", '%d/%m/%Y %H:%M')
@@ -143,11 +194,13 @@ class Model :
     			if date_min > date:
     				date_min = date
     			# Séparation des reclamations par site et ajout de la date
-    			for site in sites:
-    				if str(site) in row[46]:
-    					if '' != row[13]:
-    						sites[site].append(row[13])
-    						dates[site].append([row[13], date, site])
+			    for site in sites:
+				    if str(site) in row[46]:
+				        if '' != row[13]:
+						    sites[site].append(row[13])
+						    motif_site_date[site].append([row[13], date])
+					    if '' != row[47]:
+						    tournee_site_date[site].append([row[47], date])
 
     	return {'date_min':date_min, 'date_max':date_max}
 

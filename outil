@@ -42,8 +42,8 @@ def readCSV() :
 			liste_sites.append(row[0])
 
 		# Gestion des sites
-		#ajoutSite(liste_sites)
-		#supprimerSite(liste_sites)
+		ajoutSite(liste_sites)
+		supprimerSite(liste_sites)
 		selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site)
 
 		# détermination des dates min et max et du nombre de semaines
@@ -88,7 +88,7 @@ def removeFiles():
     			os.remove(path+'/'+x)
 
 # ajout d'un site dans le fichier et dans la liste courante
-"""def ajoutSite(liste_sites):
+def ajoutSite(liste_sites):
 	question = raw_input("Souhaitez-vous ajouter un site?")
 	if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
 		site = raw_input("Entrez le nom du site: ")
@@ -120,7 +120,7 @@ def supprimerSite(liste_sites):
 			if site not in row[0]:
 				c_write.writerow(row)
 		os.remove("liste_sites")
-		os.renames("liste_sites_temp", "liste_sites")"""
+		os.renames("liste_sites_temp", "liste_sites")
 
 def selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site):
 	#ajout du site s'il est demandé
