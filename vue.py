@@ -107,3 +107,11 @@ class FenetrePrincipale :
     def callback(self, numeroAction):
         if numeroAction==1:
             showinfo('Message de confirmation', 'Le traitement du fichier a bien été effectué !')
+        if numeroAction==2:
+            question=askyesno('Sauvegarde en PDF', 'Voulez vous sauvegarder tous les graphiques générés dans un seul fichier PDF ?')
+            if question==1:
+                self.controller.savePDF()
+            if question==0:
+                showinfo('Message de confirmation', 'Rien ne sera effectué')
+        if numeroAction==3:
+                showinfo('Message de confirmation', 'Les fichiers ont bien été enregistrés dans un PDF')

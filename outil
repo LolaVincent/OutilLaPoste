@@ -21,9 +21,9 @@ def readCSV() :
 	nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
 
 
-	with open(nomFichier, 'rb') as csvfile:
+	with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
 		bdd = csv.reader(csvfile, delimiter=';')
-		
+
 
 		liste_sites = []
 		selection_site = []
@@ -33,7 +33,7 @@ def readCSV() :
 		motif_site_date = {}
 		tournee_site_date = {}
 
-		#suppression des graphes dans le dossier	
+		#suppression des graphes dans le dossier
 		removeFiles()
 
 		# lecture de la liste des sites
@@ -54,20 +54,20 @@ def readCSV() :
 		nb_semaine = nb['nb_semaines']
 		nb_mois= nb['nb_mois']
 
-		# Calcul des indicateurs 
-				
-		
+		# Calcul des indicateurs
+
+
 		motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
 		motif_site_semaine = motif_site['motif_site_semaine']
 		motif_site_mois = motif_site['motif_site_mois']
-		
+
 		nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
 		tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
 
 		tournee_site_semaine = tournee_site['tournee_site_semaine']
 		tournee_site_mois = tournee_site['tournee_site_mois']
 
-			
+
 
 		#choix de la semaine
 		num_semaine_mois = choixSemaineMois(nb_semaine)
@@ -179,17 +179,17 @@ def motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, motif_site_date)
 	for i in range(1, nb_semaine+2):
 		motif_lieu = {}
 		for site in motif_site_date:
-			motif_lieu[site+str(i-1)] = [] 
+			motif_lieu[site+str(i-1)] = []
 #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 		motif_site_semaine.append(motif_lieu)
-	
+
 	for i in range(1, nb_mois+2):
 		motif_lieu = {}
 		for site in motif_site_date:
-			motif_lieu[site+str(i-1)] = [] 
+			motif_lieu[site+str(i-1)] = []
 #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 		motif_site_mois.append(motif_lieu)
-	
+
 
 	for rows in motif_site_date :
 		for row in motif_site_date[rows]:
@@ -210,14 +210,14 @@ def tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, tournee_site_d
 	for i in range(1, nb_semaine+2):
 		tournee_lieu = {}
 		for site in tournee_site_date:
-			tournee_lieu[site+str(i-1)] = [] 
+			tournee_lieu[site+str(i-1)] = []
 #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 		tournee_site_semaine.append(tournee_lieu)
-	
+
 	for i in range(1, nb_mois+2):
 		tournee_lieu = {}
 		for site in tournee_site_date:
-			tournee_lieu[site+str(i-1)] = [] 
+			tournee_lieu[site+str(i-1)] = []
 #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 		tournee_site_mois.append(tournee_lieu)
 
@@ -256,7 +256,7 @@ def choixSemaineMois(nb_semaine):
 			while int(num['semaine']) > nb_semaine:
 				print("Cette semaine n'est pas traitée dans le fichier")
 				num['semaine'] = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
-	
+
 	elif intervalle == '2':
 		num['mois'] = raw_input('Pour quel mois souhaitez-vous voir les indicateurs ?')
 	return num
@@ -291,7 +291,7 @@ def showNbReclaSemaineGraph(nb_recla_semaine):
 	# Construction du camembert
 
 	labels = name
-	values = data 
+	values = data
 	indexes = np.arange(len(labels))
 	width = 1
 	plt.bar(indexes, values, width, color='rgbkymc')
@@ -321,7 +321,7 @@ def showSiteGraph(sites) :
 		plt.show()
 		plt.close()
 
-# Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png 
+# Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
 
 def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois):
 	for site in selection_site:
@@ -335,7 +335,7 @@ def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, 
 				count = Counter(semaines[site])
 				name = count.keys()
 				data = count.values()
-	
+
 			elif motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]:
 					count = Counter(motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']])
 					name = count.keys()
@@ -345,7 +345,7 @@ def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, 
 					count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
 					name = count.keys()
 					data = count.values()
-			
+
 
 			# Construction du camembert
 
@@ -369,7 +369,7 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 				count = Counter(semaines[site])
 				name = count.keys()
 				data = count.values()
-	
+
 			elif tournee_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]:
 					count = Counter(tournee_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']])
 					name = count.keys()
@@ -383,7 +383,7 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 
 			# Construction du camembert
 		labels = name
-		values = data 
+		values = data
 
 		indexes = np.arange(len(labels))
 		width = 1

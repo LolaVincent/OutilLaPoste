@@ -29,5 +29,10 @@ class Controller():
             i=i+1
         self.model.readCSV(str(self.vue.listeCSV.get()),listSites)
         self.vue.callback(1)
+        self.vue.callback(2)
         self.vue.fenetre.destroy()
         self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
+
+    def savePDF(self):
+        self.model.fromPNGToPDF("Résumé",self.model.listeImagesDossier("Graphiques/"), "Graphiques")
+        self.vue.callback(3)
