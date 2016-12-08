@@ -45,48 +45,44 @@ class Model :
     #	nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
         self.listeSitesCoches=listeSitesCoches
 
+        with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
 
-    	with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
-    		bdd = csv.reader(csvfile, delimiter=';')
-
-    		motif=[]
-
-    		motif_site_date = {}
-    		sites = {}
-
-    		liste_sites = []
+            bdd = csv.reader(csvfile, delimiter=';')
+            motif=[]
+            sites = {}
             tournee_site_date={}
+            motif_site_date = {}
+            liste_sites = []
 
-
-    		l_sites = csv.reader(open("liste_sites","rb"))
-    		for row in l_sites:
+            l_sites = csv.reader(open("liste_sites","rb"))
+            for row in l_sites:
     			liste_sites.append(row[0])
 
-    		selection_sites = []
+            selection_sites = []
 
-    		self.removeFiles()
+            self.removeFiles()
     	#	ajoutSite(liste_sites)
     	#	supprimerSite(liste_sites)
-    		self.selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_sites)
-    		date_min_max = self.parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
+            self.selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_sites)
+            date_min_max = self.parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
             mois_min = date_min_max['date_min'].month
-    		csvfile.seek(0)
-    		nb = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+    	#	csvfile.seek(0)
+            nb = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
             nb_semaine = nb['nb_semaines']
-    		nb_mois= nb['nb_mois']
+            nb_mois= nb['nb_mois']
 
 		    # Calcul des indicateurs
 
 
-		    motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
-		    motif_site_semaine = motif_site['motif_site_semaine']
-	        motif_site_mois = motif_site['motif_site_mois']
+            motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
+            motif_site_semaine = motif_site['motif_site_semaine']
+            motif_site_mois = motif_site['motif_site_mois']
 
-	        nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
-	        tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
+            nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
+            tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
 
-	        tournee_site_semaine = tournee_site['tournee_site_semaine']
-	        tournee_site_mois = tournee_site['tournee_site_mois']
+            tournee_site_semaine = tournee_site['tournee_site_semaine']
+            tournee_site_mois = tournee_site['tournee_site_mois']
 
 
 
@@ -95,10 +91,10 @@ class Model :
             #ici on récupère un dico faudra bien faire attention à comment le récupérer avec tes MessageBox
 		    #num_semaine_mois = choixSemaineMois(nb_semaine)
 
-            
-    		self.showMotifGraph(motif)
+
+            self.showMotifGraph(motif)
             self.showNbReclaSemaineGraph(nb_motif_semaine)
-    		self.showSiteGraph(sites)
+            self.showSiteGraph(sites)
             #showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
     		#showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
 
@@ -127,8 +123,9 @@ class Model :
     	path = "Graphiques"
     	files=os.listdir(path)
     	for x in files:
-    		if not x in '0pageDeGarde.png':
-        			os.remove(path+'/'+x)
+            if not x in '0pageDeGarde.png' :
+                print("haha")
+                os.remove(path+'/'+x)
 
     # ajout d'un site dans le fichier et dans la liste courante
     def ajoutSite(self,liste_sites):
@@ -168,13 +165,13 @@ class Model :
 
     def selectionSites(self,liste_sites, sites, motif_site_date, tournee_site_date, selection_sites):
     	#ajout du site s'il est demandé
-    	for site in self.listeSitesCoches:
+        for site in self.listeSitesCoches:
     #		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
     #		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
-    			sites[site] = []
-    			tournee_site_date[site] = []
-                motif_site_date[site]=[]
-    			selection_sites.append(site)
+            sites[site] = []
+            tournee_site_date[site] = []
+            motif_site_date[site]=[]
+            selection_sites.append(site)
 
     """ Parcours du fichier BDD et récupération des infos """
     def parcoursBDD(self,bdd, sites, motif_site_date, tournee_site_date, motif):
@@ -194,13 +191,13 @@ class Model :
     			if date_min > date:
     				date_min = date
     			# Séparation des reclamations par site et ajout de la date
-			    for site in sites:
-				    if str(site) in row[46]:
-				        if '' != row[13]:
-						    sites[site].append(row[13])
-						    motif_site_date[site].append([row[13], date])
-					    if '' != row[47]:
-						    tournee_site_date[site].append([row[47], date])
+                for site in sites:
+                    if str(site) in row[46]:
+                        if '' != row[13]:
+                            sites[site].append(row[13])
+                            motif_site_date[site].append([row[13], date])
+                        if '' != row[47]:
+                            tournee_site_date[site].append([row[47], date])
 
     	return {'date_min':date_min, 'date_max':date_max}
 
