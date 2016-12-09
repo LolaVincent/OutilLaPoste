@@ -3,6 +3,7 @@
 
 from vue import *
 from model import *
+from vue2 import *
 
 class Controller():
     def __init__(self):
@@ -17,7 +18,7 @@ class Controller():
         self.vue.fenetre.mainloop()
 
     def openChoices(self,event):
-        periodeChoisie=str(self.vue.stockPeriods.get())
+        periodeChoisie=str(self.vue.listePeriods.get())
         self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self)
         self.fenetreChoix.bouton.bind("<Button-1>",self.beginExtraction)
 
@@ -38,7 +39,7 @@ class Controller():
         if str(self.vue.stockPeriods)=="Mois":
             periodeEntree=str(self.fenetreChoix.sbMois.get())
 
-        self.model.readCSV(str(self.vue.listeCSV.get()),listSites,str(self.vue.stockPeriods),periodeEntree)
+        self.model.readCSV(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods),periodeEntree)
         self.fenetreChoix.master.destroy()
         self.vue.callback(1)
         self.vue.callback(2)

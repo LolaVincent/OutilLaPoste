@@ -89,14 +89,14 @@ class Model :
 		    #choix de la semaine
             print("LIS CE QU'IL Y A ICI JUSTE EN BAS DE CE COMMENTAIRE")
             #ici on récupère un dico faudra bien faire attention à comment le récupérer avec tes MessageBox
-		    num_semaine_mois = self.choixSemaineMois(nb_semaine,choixPeriode,valeurPeriode)
+            num_semaine_mois = self.choixSemaineMois(nb_semaine,choixPeriode,valeurPeriode)
 
 
             self.showMotifGraph(motif)
             self.showNbReclaSemaineGraph(nb_motif_semaine)
             self.showSiteGraph(sites)
             showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
-    		showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
+            showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
 
     def showNbReclaSemaineGraph(nb_recla_semaine):
 
@@ -269,7 +269,8 @@ class Model :
     		plt.savefig('Graphiques/'+site+'.png')
     	#	plt.show()
     	#	plt.close()
-"""
+
+    """
     # Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
     def showWeekSiteGraph(self,semaines, nb_semaines, liste_sites):
     	num_semaine = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
@@ -294,8 +295,7 @@ class Model :
     			plt.close()
     		else:
     			print("Il n'y a pas de réclamations pour "+site+" sur la semaine "+num_semaine)
-
-"""
+        """
 
     """ Fonction pour mettre tous les fichiers d'un répertoire donné dans une liste """
     def listeImagesDossier(self,nomDossier) :
