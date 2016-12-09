@@ -4,6 +4,7 @@
 from vue import *
 from model import *
 from vue2 import *
+from vue3 import *
 
 class Controller():
     def __init__(self):
@@ -12,10 +13,41 @@ class Controller():
         a.append("TEst")
         self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
         self.vue.bouton0.bind("<Button-1>",self.openChoices)
+        self.vue.bouton1.bind("<Button-1>",self.newSite)
+        self.vue.bouton2.bind("<Button-1>",self.deleteSite)
 
 
     def run(self):
+        print("HAHA")
         self.vue.fenetre.mainloop()
+
+    def newSite(self,event):
+        self.fenetreNouveauSite=FenetreInputSite(1)
+        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSite)
+
+    def deleteSite(self,event):
+        self.fenetreNouveauSite=FenetreInputSite(2)
+        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmDeleteSite)
+
+    def confirmDeleteSite(self,event):
+
+        print(str(self.fenetreNouveauSite.inputBox.get()))
+        self.model.supprimerSite(str(self.fenetreNouveauSite.inputBox.get()))
+        self.fenetreNouveauSite.master.destroy()
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+
+    def confirmNewSite(self,event):
+    #    print(str(self.fenetreNouveauSite.nomSite.get()))
+    #    print(str(self.fenetreNouveauSite.nomSite))
+    #    print(str(self.fenetreNouveauSite.inputBox))
+        print(str(self.fenetreNouveauSite.inputBox.get()))
+    #    print("VOICI LA VALEUR DU TEXTE ENTRE DANS LA BOX "+ str(self.fenetreNouveauSite.nomSite))
+        self.model.ajoutSite(str(self.fenetreNouveauSite.inputBox.get()))
+        self.fenetreNouveauSite.master.destroy()
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+
 
     def openChoices(self,event):
         periodeChoisie=str(self.vue.listePeriods.get())
@@ -45,7 +77,8 @@ class Controller():
         self.vue.callback(1)
         self.vue.callback(2)
         self.vue.fenetre.destroy()
-        self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
+        self.newController=Controller()
+
 
     def savePDF(self):
         self.model.fromPNGToPDF("Résumé",self.model.listeImagesDossier("Graphiques/"), "Graphiques")

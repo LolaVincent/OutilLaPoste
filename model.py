@@ -62,8 +62,8 @@ class Model :
             selection_site = []
 
             self.removeFiles()
-    	#	ajoutSite(liste_sites)
-    	#	supprimerSite(liste_sites)
+    	#	self.ajoutSite()
+    	#	self.supprimerSite()
             self.selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site)
             date_min_max = self.parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
             mois_min = date_min_max['date_min'].month
@@ -129,39 +129,27 @@ class Model :
                 os.remove(path+'/'+x)
 
     # ajout d'un site dans le fichier et dans la liste courante
-    def ajoutSite(self,liste_sites):
-    	question = raw_input("Souhaitez-vous ajouter un site?")
-    	if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
-    		site = raw_input("Entrez le nom du site: ")
-    		site = site.upper()
-    		liste_sites.append(site)
-    		c = csv.writer(open("liste_sites", "a"))
-    		c.writerow([site])
+    def ajoutSite(self, nomNouveauFichier):
+    	site = nomNouveauFichier
+    	site = site.upper()
+    	#liste_sites.append(site)
+    	c = csv.writer(open("liste_sites", "a"))
+    	c.writerow([site])
 
     # suppression d'un site dans le fichier et dans la liste courante
-    def supprimerSite(self,liste_sites):
-    	question = raw_input("Souhaitez-vous supprimer un site?")
-    	if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
-    		site = raw_input("Entrez le nom du site: ")
-    		site = site.upper()
-    		fichier = open("liste_sites", "rb")
-    		c_write = csv.writer(open("liste_sites_temp", "a"))
-    		c_read = csv.reader(fichier, delimiter=';')
+    def supprimerSite(self,nomFichierSupprime):
+    	site = nomFichierSupprime
+    	site = site.upper()
+    	fichier = open("liste_sites", "rb")
+    	c_write = csv.writer(open("liste_sites_temp", "a"))
+    	c_read = csv.reader(fichier, delimiter=';')
 
-    		#ext ce que le site est présent dans la liste ?
-    		while site not in liste_sites:
-    			site = raw_input("Ce site n\'est pas présent dans la liste, entrez le nom du site: ")
-    			site = site.upper()
-
-    		#suppresion de la liste des sites sans relire le fichier
-    		liste_sites.remove(site)
-
-    		#ecriture de la nouvelle liste dans un fichier temporaire puis suppression
-    		for row in c_read:
-    			if site not in row[0]:
-    				c_write.writerow(row)
-    		os.remove("liste_sites")
-    		os.renames("liste_sites_temp", "liste_sites")
+    	#ecriture de la nouvelle liste dans un fichier temporaire puis suppression
+    	for row in c_read:
+    		if site not in row[0]:
+    			c_write.writerow(row)
+    	os.remove("liste_sites")
+    	os.renames("liste_sites_temp", "liste_sites")
 
 
     def selectionSites(self,liste_sites, sites, motif_site_date, tournee_site_date, selection_site):
