@@ -56,18 +56,19 @@ class FenetrePrincipale :
         self.lP = LabelFrame(self.fenetre, text="Période traitée")
         self.lP.grid()
 
-
-        self.stockPeriods.append("Mois")
         self.stockPeriods.append("Semaines")
+        self.stockPeriods.append("Mois")
+        self.stockPeriods.append("Trimestre")
+
 
         self.periodsSelect.set(self.stockPeriods[0])
 
         self.listePeriods	= Combobox(self.lP, textvariable = self.periodsSelect,  values = self.stockPeriods, state = 'readonly')
         self.listePeriods.grid()
-        self.sp1=Spinbox(self.lP,from_=1, to_=12)
-        self.sp2=Spinbox(self.lP, from_=1, to_=12)
-        self.sp1.grid()
-        self.sp2.grid()
+    #    self.sp1=Spinbox(self.lP,from_=1, to_=12)
+    #    self.sp2=Spinbox(self.lP, from_=1, to_=12)
+    #    self.sp1.grid()
+    #    self.sp2.grid()
 
         self.bouton0=Button(self.fenetre, text="Valider")
         self.bouton0.grid(row=0, column=2)

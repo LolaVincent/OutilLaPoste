@@ -10,12 +10,16 @@ class Controller():
         a=list()
         a.append("TEst")
         self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
-        self.vue.bouton0.bind("<Button-1>",self.beginExtraction)
+        self.vue.bouton0.bind("<Button-1>",self.openChoices)
 
 
     def run(self):
         self.vue.fenetre.mainloop()
 
+    def openChoices(self,event):
+        periodeChoisie=str(self.vue.stockPeriods.get())
+        self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self)
+        self.fenetreChoix.bouton.bind("<Button-1>",self.beginExtraction)
 
     def beginExtraction(self,event):
         print("HAHAHAHAHHAHA")
@@ -27,7 +31,15 @@ class Controller():
                 print(self.vue.listTextCheckButton[i])
                 listSites.append(self.vue.listTextCheckButton[i])
             i=i+1
-        self.model.readCSV(str(self.vue.listeCSV.get()),listSites)
+        if str(self.vue.stockPeriods)=="Semaines":
+            a=str(self.fenetreChoix.sbSemaines1.get())
+            b=str(self.fenetreChoix.sbSemaines2.get())
+            periodeEntree=a+'-'+b
+        if str(self.vue.stockPeriods)=="Mois":
+            periodeEntree=str(self.fenetreChoix.sbMois.get())
+
+        self.model.readCSV(str(self.vue.listeCSV.get()),listSites,str(self.vue.stockPeriods),periodeEntree)
+        self.fenetreChoix.master.destroy()
         self.vue.callback(1)
         self.vue.callback(2)
         self.vue.fenetre.destroy()

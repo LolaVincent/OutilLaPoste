@@ -23,8 +23,11 @@ class FenetreInput:
             self.sbSemaines2.grid(row=0,column=2)
 
 
-        if choixFait=="Trimestres"
+        if choixFait=="Trimestre"
             self.labelTrim=Label(self.master, text="Choisissez un trimestre entre 1 et 4")
             self.labelTrim.grid(row=0,column=0)
             self.sbTrim=Spinbox(self.master, from_=1, to_=4)
             self.sbTrim.grid(row=0,column=1)
+
+        self.bouton=Button(self.master, text="Valider")
+        self.bouton.grid(row=1,column=1)
