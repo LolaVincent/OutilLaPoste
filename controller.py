@@ -32,14 +32,15 @@ class Controller():
                 print(self.vue.listTextCheckButton[i])
                 listSites.append(self.vue.listTextCheckButton[i])
             i=i+1
-        if str(self.vue.stockPeriods)=="Semaines":
+        print("VOICI LE CONTENU DE LA COMBO BOX : " + self.vue.listePeriods.get())
+        if str(self.vue.listePeriods.get())=="Semaines":
             a=str(self.fenetreChoix.sbSemaines1.get())
             b=str(self.fenetreChoix.sbSemaines2.get())
             periodeEntree=a+'-'+b
-        if str(self.vue.stockPeriods)=="Mois":
+        if str(self.vue.listePeriods.get())=="Mois":
             periodeEntree=str(self.fenetreChoix.sbMois.get())
 
-        self.model.readCSV(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods),periodeEntree)
+        self.model.readCSV(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
         self.fenetreChoix.master.destroy()
         self.vue.callback(1)
         self.vue.callback(2)

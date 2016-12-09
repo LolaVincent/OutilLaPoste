@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+import re
 import csv
 from PIL import Image # Faire sudo pip install pillow pour utiliser cette librairie
 from fpdf import FPDF # Faire sudo pip install fpdf pour utiliser cette librairie
@@ -67,19 +68,19 @@ class Model :
             date_min_max = self.parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
             mois_min = date_min_max['date_min'].month
     	#	csvfile.seek(0)
-            nb = self.calculNbSemaine(bdd, dates, date_min_max['date_min'], date_min_max['date_max'])
+            nb = self.calculNbSemaine(date_min_max['date_min'], date_min_max['date_max'])
             nb_semaine = nb['nb_semaines']
             nb_mois= nb['nb_mois']
 
 		    # Calcul des indicateurs
 
 
-            motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
+            motif_site = self.motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
             motif_site_semaine = motif_site['motif_site_semaine']
             motif_site_mois = motif_site['motif_site_mois']
 
-            nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
-            tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
+            nb_motif_semaine = self.nbReclaSemaine(motif_site_semaine, nb_semaine)
+            tournee_site = self.tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
 
             tournee_site_semaine = tournee_site['tournee_site_semaine']
             tournee_site_mois = tournee_site['tournee_site_mois']
@@ -95,10 +96,10 @@ class Model :
             self.showMotifGraph(motif)
             self.showNbReclaSemaineGraph(nb_motif_semaine)
             self.showSiteGraph(sites)
-            showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
-            showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
+            self.showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
+            self.showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
 
-    def showNbReclaSemaineGraph(nb_recla_semaine):
+    def showNbReclaSemaineGraph(self,nb_recla_semaine):
 
     	# Calcul du nombre de reclamation par motifs
     	nb_recla= Counter(nb_recla_semaine)
@@ -201,8 +202,18 @@ class Model :
 
     	return {'date_min':date_min, 'date_max':date_max}
 
+    """ Détermination de la semaine du motif et par site """
+    def calculNbSemaine(self,date_min, date_max):
+    	diff = date_max - date_min
+    	nb_jours = diff.days
+    	nb_semaines = int(ceil(nb_jours/7.0)) # arrondi supérieur
+    	nb_mois = date_max.month - date_min.month + 1
+    	print nb_semaines
+    	print nb_mois
+    	return {'nb_semaines':nb_semaines, 'nb_mois': nb_mois}
 
     """ Détermination de la semaine du motif et par site """
+    """ Anciennne version de calculNbSemaine
     def calculNbSemaine(self,bdd, dates, date_min, date_max):
     	diff = date_max - date_min
     	nb_jours = diff.days
@@ -221,7 +232,7 @@ class Model :
     			semaine = int(ceil(diff_date.days/7.0))
     			semaines[semaine][rows+str(semaine)].append(row[0])
     	return {'semaines': semaines, 'nombre de semaines': nb_semaines}
-
+        """
 
     """ Initialisation d'un tableau de semaines avec dans chaque semaine les tableaux de chaque site,
     	parcours de dates, determination de la semaine ( diff entre date min puis division par 7 pour avoir la semaine et insertion dans le tableau """
@@ -409,3 +420,69 @@ class Model :
      		plt.axis('equal')
     		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
     		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
+
+
+
+
+    def motifSitesSemaines(self,nb_mois, nb_semaine, mois_min, date_min, motif_site_date):
+        motif_site_semaine = []
+        motif_site_mois = []
+        for i in range(1, nb_semaine+2):
+        	motif_lieu = {}
+        	for site in motif_site_date:
+        		motif_lieu[site+str(i-1)] = []
+                #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+        	motif_site_semaine.append(motif_lieu)
+
+        for i in range(1, nb_mois+2):
+        	motif_lieu = {}
+        	for site in motif_site_date:
+        		motif_lieu[site+str(i-1)] = []
+        #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+        	motif_site_mois.append(motif_lieu)
+
+
+        for rows in motif_site_date :
+        	for row in motif_site_date[rows]:
+        		diff_date = row[1] - date_min
+        		semaine = int(ceil((diff_date.days + 1)/7.0))
+        		motif_site_semaine[semaine][rows+str(semaine)].append(row[0])
+        		mois = row[1].month - mois_min + 1
+        		motif_site_mois[mois][rows+str(mois)].append(row[0])
+        return {'motif_site_semaine': motif_site_semaine, 'motif_site_mois': motif_site_mois}
+
+    def nbReclaSemaine(self,motif_site_semaine, nb_semaine):
+        nb_motif_semaine = {}
+        for i in range(1, nb_semaine+1):
+        	print i
+        	somme = 0
+        	for site in motif_site_semaine[i]:
+        		somme = somme + len(motif_site_semaine[i][site])
+        	nb_motif_semaine['semaine '+str(i)] = somme
+        return nb_motif_semaine
+
+    def tourneeSitesSemaines(self,nb_mois, nb_semaine, mois_min, date_min, tournee_site_date):
+    	tournee_site_semaine = []
+    	tournee_site_mois = []
+    	for i in range(1, nb_semaine+2):
+    		tournee_lieu = {}
+    		for site in tournee_site_date:
+    			tournee_lieu[site+str(i-1)] = []
+    #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+    		tournee_site_semaine.append(tournee_lieu)
+
+    	for i in range(1, nb_mois+2):
+    		tournee_lieu = {}
+    		for site in tournee_site_date:
+    			tournee_lieu[site+str(i-1)] = []
+    #besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+    		tournee_site_mois.append(tournee_lieu)
+
+    	for rows in tournee_site_date :
+    		for row in tournee_site_date[rows]:
+    			diff_date = row[1] - date_min
+    			semaine = int(ceil((diff_date.days + 1)/7.0))
+    			tournee_site_semaine[semaine][rows+str(semaine)].append(row[0])
+    			mois = row[1].month - mois_min + 1
+    			tournee_site_mois[mois][rows+str(mois)].append(row[0])
+    	return {'tournee_site_semaine': tournee_site_semaine, 'tournee_site_mois': tournee_site_mois}

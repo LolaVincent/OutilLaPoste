@@ -9,6 +9,7 @@ class FenetreInput:
     def __init__(self,fenetreP,choixFait,controller):
 
         self.master = Tk()
+        self.master.wm_title("Intervalle de temps considéré")
         if choixFait=="Mois":
             self.labelMois=Label(self.master, text="Choisissez un mois entre 1 et 12")
             self.labelMois.grid(row=0,column=0)
