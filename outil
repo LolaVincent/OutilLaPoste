@@ -236,7 +236,6 @@ def tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, tournee_site_d
 def nbReclaSemaine(motif_site_semaine, nb_semaine):
 	nb_motif_semaine = {}
 	for i in range(1, nb_semaine+1):
-		print i
 		somme = 0
 		for site in motif_site_semaine[i]:
 			somme = somme + len(motif_site_semaine[i][site])
@@ -249,7 +248,6 @@ def choixSemaineMois(nb_semaine):
 	if intervalle == '1':
 		num['semaine'] = raw_input('Pour quelle semaine souhaitez-vous voir les indicateurs ?')
 		if re.search('d*-d*', num['semaine']):
-			print num['semaine']
 			num['semaine'] = num['semaine'].split("-")
 			while int(num['semaine'][1]) > nb_semaine:
 				print("Cette semaine n'est pas traitée dans le fichier")
@@ -277,10 +275,10 @@ def showMotifGraph (motif):
 
 	plt.figure(figsize=(12, 10))
 	plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
-	plt.title('Nombre de réclamations par motif pour l\'ensemble des sites', )
+	plt.title('Nombre de réclamations par motif pour l\'ensemble des sites', fontsize=20)
 
 	plt.legend(name, bbox_to_anchor=(1.13, 0.30), prop={'size':9})
-	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', dpi=120)
+	plt.savefig('Graphiques/5-' + 'nb_recla_motifs.png', dpi=120)
 	plt.show()
 	plt.close()
 
@@ -304,7 +302,7 @@ def showNbReclaSemaineGraph(nb_recla_semaine):
 	plt.xticks(indexes + width * 0.5, labels)
 	#plt.axis('equal')
 
-	plt.title('Nombre de réclamations par semaine')
+	plt.title('Nombre de réclamations par semaine', fontsize=20)
 	plt.savefig('Graphiques/' + '1-nb_recla_semaine.png', fontsize=20)
 	plt.show()
 	plt.close()
@@ -360,7 +358,7 @@ def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, 
 		plt.figure(figsize=(12, 10))
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		plt.legend(name, bbox_to_anchor=(1.13, 0.30), prop={'size':9})
-		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
+		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ', fontsize=20)
 		plt.savefig('Graphiques/3-motif-'+site+'-semaine.png')
 		plt.show()
 		plt.close()
@@ -398,7 +396,7 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 
 		plt.bar(indexes, values, width, color=colors)
 		plt.xticks(indexes + width * 0.5, labels)
-		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
+		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ', fontsize=16)
 		plt.savefig('Graphiques/4-tournee-'+site+'-semaine.png')
 		plt.show()
 		plt.close()
