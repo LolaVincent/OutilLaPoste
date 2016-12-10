@@ -10,11 +10,16 @@ import matplotlib.pyplot as plt # pour les graphes, faire sudo apt-get install p
 import numpy as np
 from datetime import datetime
 from math import *
+from operator import itemgetter
+from matplotlib.font_manager import FontProperties
 
 # Problème d'encodage
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+
+colors = ['coral', 'lightpink', 'salmon', 'burlywood' , 'indianred', 'tomato', 'lightsage',  'sandybrown', 'khaki', 'thistle','tan', 'darksalmon', 'lightcoral', 'lightblue', 'lightsalmon', 'rosybrown',  'lightgrey']
 
 """ fonction de lecture du CSV """
 def readCSV() :
@@ -54,15 +59,13 @@ def readCSV() :
 		nb_semaine = nb['nb_semaines']
 		nb_mois= nb['nb_mois']
 
-
 		# Calcul des indicateurs
-
-
+				
 		motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
 		motif_site_semaine = motif_site['motif_site_semaine']
 		motif_site_mois = motif_site['motif_site_mois']
-
 		nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
+		
 		tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
 
 		tournee_site_semaine = tournee_site['tournee_site_semaine']
@@ -70,12 +73,10 @@ def readCSV() :
 
 
 
-
 		#choix de la semaine
 		num_semaine_mois = choixSemaineMois(nb_semaine)
-		print(num_semaine_mois)
-		# Creation des graphes
 
+		# Creation des graphes
 		showMotifGraph(motif)
 		showNbReclaSemaineGraph(nb_motif_semaine)
 		showSiteGraph(sites)
@@ -127,7 +128,6 @@ def supprimerSite(liste_sites):
 
 def selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site):
 	#ajout du site s'il est demandé
-	print(liste_sites)
 	for site in liste_sites:
 		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
 		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
@@ -135,10 +135,7 @@ def selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selec
 			motif_site_date[site] = []
 			tournee_site_date[site] = []
 			selection_site.append(site)
-	print(selection_site)
-	print(motif_site_date)
-	print(tournee_site_date)
-	print(sites)
+
 
 
 """ Parcours du fichier BDD et récupération des infos """
@@ -175,8 +172,6 @@ def calculNbSemaine(date_min, date_max):
 	nb_jours = diff.days
 	nb_semaines = int(ceil(nb_jours/7.0)) # arrondi supérieur
 	nb_mois = date_max.month - date_min.month + 1
-	print nb_semaines
-	print nb_mois
 	return {'nb_semaines':nb_semaines, 'nb_mois': nb_mois}
 
 
@@ -279,10 +274,13 @@ def showMotifGraph (motif):
 	# Construction du camembert
 
 	explode= np.zeros(len(nb_recla_motifs))
-	plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', shadow=False)
-	plt.axis('equal')
-	plt.title('nb_recla_motifs')
-	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
+
+	plt.figure(figsize=(12, 10))
+	plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
+	plt.title('Nombre de réclamations par motif pour l\'ensemble des sites', )
+
+	plt.legend(name, bbox_to_anchor=(1.13, 0.30), prop={'size':9})
+	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', dpi=120)
 	plt.show()
 	plt.close()
 
@@ -291,22 +289,23 @@ def showMotifGraph (motif):
 def showNbReclaSemaineGraph(nb_recla_semaine):
 
 	# Calcul du nombre de reclamation par motifs
-	nb_recla= Counter(nb_recla_semaine)
-	name = nb_recla.keys()
+	nb_recla = Counter(nb_recla_semaine)
+	nb_recla = sorted(nb_recla.items(), key= lambda t : t[0])
 
-	data = nb_recla.values()
 	# Construction du camembert
-
-	labels = name
-	values = data
+	labels = []
+	values = []
+	for element in nb_recla:
+		labels.append(element[0])
+		values.append(element[1])
 	indexes = np.arange(len(labels))
 	width = 1
-	plt.bar(indexes, values, width, color='rgbkymc')
+	plt.bar(indexes, values, width, color=colors)
 	plt.xticks(indexes + width * 0.5, labels)
-	plt.axis('equal')
+	#plt.axis('equal')
 
-	plt.title('nombre de réclamations par semaine')
-	plt.savefig('Graphiques/' + 'nb_recla_semaine.png', fontsize='20')
+	plt.title('Nombre de réclamations par semaine')
+	plt.savefig('Graphiques/' + '1-nb_recla_semaine.png', fontsize=20)
 	plt.show()
 	plt.close()
 
@@ -321,10 +320,11 @@ def showSiteGraph(sites) :
 		# Construction du camembert
 
 		explode = np.zeros(len(count_sites))
-		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
- 		plt.axis('equal')
-		plt.title('Nombre de réclamations par motifs pour '+site)
-		plt.savefig('Graphiques/'+site+'.png')
+		plt.figure(figsize=(12, 10))
+		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
+		plt.title('Nombre de réclamations par motifs pour '+site, fontsize=20)
+		plt.legend(name, bbox_to_anchor=(1.13, 0.20), prop={'size':9})
+		plt.savefig('Graphiques/2-'+site+'.png', fontsize='20', dpi=120)
 		plt.show()
 		plt.close()
 
@@ -357,10 +357,11 @@ def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, 
 			# Construction du camembert
 
 		explode = np.zeros(len(data))
-		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
-	 	plt.axis('equal')
+		plt.figure(figsize=(12, 10))
+		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
+		plt.legend(name, bbox_to_anchor=(1.13, 0.30), prop={'size':9})
 		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
-		plt.savefig('Graphiques/motif-'+site+'-semaine.png')
+		plt.savefig('Graphiques/3-motif-'+site+'-semaine.png')
 		plt.show()
 		plt.close()
 
@@ -395,11 +396,10 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 		indexes = np.arange(len(labels))
 		width = 1
 
-		plt.bar(indexes, values, width, color='rgbkymc')
+		plt.bar(indexes, values, width, color=colors)
 		plt.xticks(indexes + width * 0.5, labels)
- 		plt.axis('equal')
 		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
-		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
+		plt.savefig('Graphiques/4-tournee-'+site+'-semaine.png')
 		plt.show()
 		plt.close()
 
@@ -428,7 +428,7 @@ def fromPNGToPDF(pdfFileName, listImages, dir = ''):
 
     for page in listImages:
         pdf.add_page()
-        pdf.image(dir + str(page) , 0, 0)
+        pdf.image(dir + str(page) , 105, 300)
 
     pdf.output( pdfFileName + ".pdf", "F")
 
