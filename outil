@@ -54,6 +54,7 @@ def readCSV() :
 		nb_semaine = nb['nb_semaines']
 		nb_mois= nb['nb_mois']
 
+
 		# Calcul des indicateurs
 
 
@@ -69,10 +70,12 @@ def readCSV() :
 
 
 
+
 		#choix de la semaine
 		num_semaine_mois = choixSemaineMois(nb_semaine)
-
+		print(num_semaine_mois)
 		# Creation des graphes
+
 		showMotifGraph(motif)
 		showNbReclaSemaineGraph(nb_motif_semaine)
 		showSiteGraph(sites)
@@ -124,6 +127,7 @@ def supprimerSite(liste_sites):
 
 def selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site):
 	#ajout du site s'il est demandé
+	print(liste_sites)
 	for site in liste_sites:
 		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
 		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
@@ -131,7 +135,10 @@ def selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selec
 			motif_site_date[site] = []
 			tournee_site_date[site] = []
 			selection_site.append(site)
-
+	print(selection_site)
+	print(motif_site_date)
+	print(tournee_site_date)
+	print(sites)
 
 
 """ Parcours du fichier BDD et récupération des infos """

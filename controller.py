@@ -36,6 +36,7 @@ class Controller():
         self.fenetreNouveauSite.master.destroy()
         self.vue.fenetre.destroy()
         self.newController=Controller()
+        self.newController.run()
 
     def confirmNewSite(self,event):
     #    print(str(self.fenetreNouveauSite.nomSite.get()))
@@ -47,6 +48,7 @@ class Controller():
         self.fenetreNouveauSite.master.destroy()
         self.vue.fenetre.destroy()
         self.newController=Controller()
+        self.newController.run()
 
 
     def openChoices(self,event):
@@ -78,6 +80,7 @@ class Controller():
         self.vue.callback(2)
         self.vue.fenetre.destroy()
         self.newController=Controller()
+        self.newController.run()
 
 
     def savePDF(self):

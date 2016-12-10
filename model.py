@@ -32,7 +32,7 @@ class Model :
     	return listeFichiers
 
     def readSites(self) :
-        liste_sites=list()
+        liste_sites=[]
         l_sites = csv.reader(open("liste_sites","rb"))
         for row in l_sites:
             liste_sites.append(row[0])
@@ -54,24 +54,35 @@ class Model :
             tournee_site_date={}
             motif_site_date = {}
             liste_sites = []
+            selection_site = []
 
+            #Suppression des graphes dans le dossier
+            self.removeFiles()
+
+            #lecture de la liste des sites
             l_sites = csv.reader(open("liste_sites","rb"))
             for row in l_sites:
     			liste_sites.append(row[0])
 
-            selection_site = []
 
-            self.removeFiles()
+
     	#	self.ajoutSite()
     	#	self.supprimerSite()
             self.selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site)
+
+            # détermination des dates min et max et du nombre de semaines
+    		#lecture du csv : lecture des motifs, separation par site
             date_min_max = self.parcoursBDD(bdd, sites, motif_site_date, tournee_site_date, motif)
             mois_min = date_min_max['date_min'].month
-    	#	csvfile.seek(0)
+    #        csvfile.seek(0)
             nb = self.calculNbSemaine(date_min_max['date_min'], date_min_max['date_max'])
             nb_semaine = nb['nb_semaines']
             nb_mois= nb['nb_mois']
-
+            print(date_min_max)
+            print(mois_min)
+            print(nb)
+            print(nb_semaine)
+            print(nb_mois)
 		    # Calcul des indicateurs
 
 
@@ -92,7 +103,33 @@ class Model :
             #ici on récupère un dico faudra bien faire attention à comment le récupérer avec tes MessageBox
             num_semaine_mois = self.choixSemaineMois(nb_semaine,choixPeriode,valeurPeriode)
 
+            print(num_semaine_mois)
 
+
+            #Création des graphes
+            print("\nELLE EST OU LA PUTAIN D'ERREUR JESUS ?")
+            print("\nVoici le print de motif :")
+            print(motif)
+            print("\nVoici le print de nb_motif_semaine :")
+            print(nb_motif_semaine)
+            print("\nVoici le print de sites:")
+            print(sites)
+            print("\nVoici le print de motif_site_semaine:")
+            print(motif_site_semaine)
+            print("\nVoici le print de motif_site_mois:")
+            print(motif_site_mois)
+            print("\nVoici le print de selection_site:")
+            print(selection_site)
+            print("\nVoici le print de num_semaine_mois:")
+            print(num_semaine_mois)
+            print("\nVoici le print de tournee_site_semaine:")
+            print(tournee_site_semaine)
+            print("\nVoici le print de tournee_site_mois:")
+            print(tournee_site_mois)
+            print("\nVoici le print de selection_site:")
+            print(selection_site)
+            print("\nprint de num_semaine_mois:")
+            print(num_semaine_mois)
             self.showMotifGraph(motif)
             self.showNbReclaSemaineGraph(nb_motif_semaine)
             self.showSiteGraph(sites)
@@ -118,7 +155,8 @@ class Model :
 
     	plt.title('nombre de réclamations par semaine')
     	plt.savefig('Graphiques/' + 'nb_recla_semaine.png', fontsize='20')
-
+        #plt.show()
+        plt.close()
     # suppression des graphes dans le dossier
     def removeFiles(self):
     	path = "Graphiques"
@@ -154,6 +192,8 @@ class Model :
 
     def selectionSites(self,liste_sites, sites, motif_site_date, tournee_site_date, selection_site):
     	#ajout du site s'il est demandé
+        print(liste_sites)
+        print(self.listeSitesCoches)
         for site in self.listeSitesCoches:
     #		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
     #		if (question== "oui" or question =="OUI" or question =="O" or question=="o" or question=="yes"):
@@ -161,6 +201,10 @@ class Model :
             tournee_site_date[site] = []
             motif_site_date[site]=[]
             selection_site.append(site)
+        print(selection_site)
+        print(motif_site_date)
+        print(tournee_site_date)
+        print(sites)
 
     """ Parcours du fichier BDD et récupération des infos """
     def parcoursBDD(self,bdd, sites, motif_site_date, tournee_site_date, motif):
@@ -244,9 +288,9 @@ class Model :
     	plt.title('Nombre de réclamations par motif')
     	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
         print("On est à la fin de showmotifgraph juste avant le show")
-    #	plt.show()
+    	#plt.show()
         print("On est à la fin de showmotifgraph juste avant le close")
-    #	plt.close()
+    	plt.close()
         print("On est à la fin de showmotifgraph juste après le close")
 
 
@@ -258,16 +302,20 @@ class Model :
     		count_sites = Counter(sites[site])
     		name = count_sites.keys()
     		data = count_sites.values()
-
     		# Construction du camembert
-
     		explode = np.zeros(len(count_sites))
-    		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
+    		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%',shadow=False)
      		plt.axis('equal')
     		plt.title('Nombre de réclamations par motifs pour '+site)
     		plt.savefig('Graphiques/'+site+'.png')
-    	#	plt.show()
-    	#	plt.close()
+		plt.close()
+
+
+
+
+
+
+
 
     """
     # Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
@@ -290,7 +338,7 @@ class Model :
     	 		plt.axis('equal')
     			plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
     			plt.savefig('Graphiques/'+site+'-semaine.png')
-    			plt.show()
+    			#plt.show()
     			plt.close()
     		else:
     			print("Il n'y a pas de réclamations pour "+site+" sur la semaine "+num_semaine)
@@ -363,13 +411,15 @@ class Model :
     					data = count.values()
 
 
-    			# Construction du camembert
+    		# Construction du camembert
 
     		explode = np.zeros(len(data))
     		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
     	 	plt.axis('equal')
     		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
     		plt.savefig('Graphiques/motif-'+site+'-semaine.png')
+		plt.close()
+
 
 
     def showTourneeSiteWeekGraph(self,tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois):
@@ -408,7 +458,7 @@ class Model :
      		plt.axis('equal')
     		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
     		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
-
+		plt.close()
 
 
 
