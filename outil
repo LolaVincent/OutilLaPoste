@@ -47,8 +47,8 @@ def readCSV() :
 			liste_sites.append(row[0])
 
 		# Gestion des sites
-		ajoutSite(liste_sites)
-		supprimerSite(liste_sites)
+		#ajoutSite(liste_sites)
+		#supprimerSite(liste_sites)
 		selectionSites(liste_sites, sites, motif_site_date, tournee_site_date, selection_site)
 
 		# détermination des dates min et max et du nombre de semaines
@@ -81,6 +81,7 @@ def readCSV() :
 		showNbReclaSemaineGraph(nb_motif_semaine)
 		showSiteGraph(sites)
 		showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
+		showTopMotifSiteGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
 		showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
 
 # suppression des graphes dans le dossier
@@ -203,9 +204,6 @@ def motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, motif_site_date)
 	return {'motif_site_semaine': motif_site_semaine, 'motif_site_mois': motif_site_mois}
 
 
-""" Initialisation d'un tableau de semaines avec dans chaque semaine les tableaux de chaque site,
-	parcours de dates, determination de la semaine ( diff entre date min puis division par 7 pour avoir la semaine et insertion dans le tableau """
-
 def tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min, tournee_site_date):
 	tournee_site_semaine = []
 	tournee_site_mois = []
@@ -278,7 +276,7 @@ def showMotifGraph (motif):
 	plt.title('Nombre de réclamations par motif pour l\'ensemble des sites', fontsize=20)
 
 	plt.legend(name, bbox_to_anchor=(1.13, 0.30), prop={'size':9})
-	plt.savefig('Graphiques/5-' + 'nb_recla_motifs.png', dpi=120)
+	plt.savefig('Graphiques/1-' + 'nb_recla_motifs.png', dpi=120)
 	plt.show()
 	plt.close()
 
@@ -303,7 +301,7 @@ def showNbReclaSemaineGraph(nb_recla_semaine):
 	#plt.axis('equal')
 
 	plt.title('Nombre de réclamations par semaine', fontsize=20)
-	plt.savefig('Graphiques/' + '1-nb_recla_semaine.png', fontsize=20)
+	plt.savefig('Graphiques/' + '2-nb_recla_semaine.png', fontsize=20)
 	plt.show()
 	plt.close()
 
@@ -322,11 +320,13 @@ def showSiteGraph(sites) :
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		plt.title('Nombre de réclamations par motifs pour '+site, fontsize=20)
 		plt.legend(name, bbox_to_anchor=(1.13, 0.20), prop={'size':9})
-		plt.savefig('Graphiques/2-'+site+'.png', fontsize='20', dpi=120)
+		plt.savefig('Graphiques/3-'+site+'.png', fontsize='20', dpi=120)
 		plt.show()
 		plt.close()
 
 # Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
+
+
 
 def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois):
 	for site in selection_site:
@@ -358,10 +358,55 @@ def showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, 
 		plt.figure(figsize=(12, 10))
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		plt.legend(name, bbox_to_anchor=(1.13, 0.30), prop={'size':9})
-		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ', fontsize=20)
-		plt.savefig('Graphiques/3-motif-'+site+'-semaine.png')
+		plt.title('Nombre de réclamations par motifs \n pour '+site+' par semaine \n', fontsize=16)
+		plt.savefig('Graphiques/4-motif-'+site+'-semaine.png')
 		plt.show()
 		plt.close()
+
+
+def showTopMotifSiteGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois):
+
+	for site in selection_site:
+		labels = []
+		values = []
+		if num_semaine_mois.keys()[0] == 'semaine':
+			if type(num_semaine_mois.values()[0]) == type(list()):
+				semaines = {}
+				semaines[site] = []
+				for i in range(int(num_semaine_mois.values()[0][0]), int(num_semaine_mois.values()[0][1])):
+					for motif in motif_site_semaine[i][site+str(i)]:
+						semaines[site].append(motif)
+				count = Counter(semaines[site]).most_common(5)
+
+				for element in count:
+					labels.append(element[0])
+					values.append(element[1])
+
+			elif motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]:
+					count = Counter(motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]).most_common(5)
+
+					for element in count:
+						labels.append(element[0])
+						values.append(element[1])
+		elif num_semaine_mois.keys()[0] == 'mois':
+			if motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
+					count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]).most_common(5)
+					for element in count:
+						labels.append(element[0])
+						values.append(element[1])
+
+			# Construction du graphe
+
+		indexes = np.arange(len(labels))
+		width = 1
+		plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':9})
+		plt.title('Top 5 des réclamations par tournee \n pour '+site+' par semaine ', fontsize=16)
+		plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png')
+		plt.show()
+		plt.close()
+
+
+
 
 def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois):
 	for site in selection_site:
@@ -381,13 +426,13 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 					name = count.keys()
 					data = count.values()
 		elif num_semaine_mois.keys()[0] == 'mois':
-			if motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
-				count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
+			if tournee_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
+				count = Counter(tournee_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
 				name = count.keys()
 				data = count.values()
 
 
-			# Construction du camembert
+			# Construction du graphe
 		labels = name
 		values = data
 
@@ -396,8 +441,8 @@ def showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_
 
 		plt.bar(indexes, values, width, color=colors)
 		plt.xticks(indexes + width * 0.5, labels)
-		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ', fontsize=16)
-		plt.savefig('Graphiques/4-tournee-'+site+'-semaine.png')
+		plt.title('Nombre de réclamations par tournee \n pour '+site+' par semaine \n', fontsize=16)
+		plt.savefig('Graphiques/6-tournee-'+site+'-semaine.png')
 		plt.show()
 		plt.close()
 
@@ -409,6 +454,7 @@ def listeImagesDossier(nomDossier) :
 	for element in os.listdir(nomDossier):
 		if(element!="0pageDeGarde.png"):
 			listeImages.append(element)
+	listeImages.sort()
 	return listeImages
 
 "Fonction permettant d'afficher toutes les images dans un pdf"
@@ -422,7 +468,6 @@ def fromPNGToPDF(pdfFileName, listImages, dir = ''):
 
 
     pdf = FPDF(unit = "pt", format = [width, height])
-
 
     for page in listImages:
         pdf.add_page()
