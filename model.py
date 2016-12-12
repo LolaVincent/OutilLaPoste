@@ -105,38 +105,53 @@ class Model :
             #ici on récupère un dico faudra bien faire attention à comment le récupérer avec tes MessageBox
             num_semaine_mois = self.choixSemaineMois(nb_semaine,choixPeriode,valeurPeriode)
 
-            print(num_semaine_mois)
-
-
-            #Création des graphes
-            print("\nELLE EST OU LA PUTAIN D'ERREUR JESUS ?")
-            print("\nVoici le print de motif :")
-            print(motif)
-            print("\nVoici le print de nb_motif_semaine :")
-            print(nb_motif_semaine)
-            print("\nVoici le print de sites:")
-            print(sites)
-            print("\nVoici le print de motif_site_semaine:")
-            print(motif_site_semaine)
-            print("\nVoici le print de motif_site_mois:")
-            print(motif_site_mois)
-            print("\nVoici le print de selection_site:")
-            print(selection_site)
-            print("\nVoici le print de num_semaine_mois:")
-            print(num_semaine_mois)
-            print("\nVoici le print de tournee_site_semaine:")
-            print(tournee_site_semaine)
-            print("\nVoici le print de tournee_site_mois:")
-            print(tournee_site_mois)
-            print("\nVoici le print de selection_site:")
-            print(selection_site)
-            print("\nprint de num_semaine_mois:")
-            print(num_semaine_mois)
             self.showMotifGraph(motif)
             self.showNbReclaSemaineGraph(nb_motif_semaine)
             self.showSiteGraph(sites)
             self.showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, selection_site, num_semaine_mois)
+            self.showTopMotifSiteGraph(motif_site_semaine,motif_site_mois,selection_site,num_semaine_mois)
             self.showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, selection_site, num_semaine_mois)
+
+    def showTopMotifSiteGraph(self,motif_site_semaine,motif_site_mois,selection_site,num_semaine_mois):
+    	for site in selection_site:
+    		labels = []
+    		values = []
+    		if num_semaine_mois.keys()[0] == 'semaine':
+    			if type(num_semaine_mois.values()[0]) == type(list()):
+    				semaines = {}
+    				semaines[site] = []
+    				for i in range(int(num_semaine_mois.values()[0][0]), int(num_semaine_mois.values()[0][1])):
+    					for motif in motif_site_semaine[i][site+str(i)]:
+    						semaines[site].append(motif)
+    				count = Counter(semaines[site]).most_common(5)
+
+    				for element in count:
+    					labels.append(element[0])
+    					values.append(element[1])
+
+    			elif motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]:
+    					count = Counter(motif_site_semaine[int(num_semaine_mois['semaine'])][site+num_semaine_mois['semaine']]).most_common(5)
+
+    					for element in count:
+    						labels.append(element[0])
+    						values.append(element[1])
+    		elif num_semaine_mois.keys()[0] == 'mois':
+    			if motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
+    					count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]).most_common(5)
+    					for element in count:
+    						labels.append(element[0])
+    						values.append(element[1])
+
+    			# Construction du graphe
+
+    		indexes = np.arange(len(labels))
+    		width = 1
+    		plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':9})
+    		plt.title('Top 5 des réclamations par tournee \n pour '+site+' par semaine ', fontsize=16)
+    		plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png')
+    		#plt.show()
+    		plt.close()
+
 
     def showNbReclaSemaineGraph(self,nb_recla_semaine):
 
@@ -310,12 +325,15 @@ class Model :
     		count_sites = Counter(sites[site])
     		name = count_sites.keys()
     		data = count_sites.values()
-    		# Construction du camembert
+
+            # Construction du camembert
     		explode = np.zeros(len(count_sites))
-    		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%',shadow=False)
-     		plt.axis('equal')
+                plt.figure(figsize=(12,10))
+    		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%',shadow=False, colors=colors)
+     		#plt.axis('equal')
     		plt.title('Nombre de réclamations par motifs pour '+site)
-    		plt.savefig('Graphiques/'+site+'.png')
+                plt.legend(name,bbox_to_anchor=(1.13,0.20), prop={'size':9})
+                plt.savefig('Graphiques/3-'+site+'.png', fontsize='20', dpi=120)
 		plt.close()
 
 
@@ -422,10 +440,11 @@ class Model :
     		# Construction du camembert
 
     		explode = np.zeros(len(data))
-    		plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False)
-    	 	plt.axis('equal')
-    		plt.title('Nombre de réclamations par motifs pour '+site+' par semaine ')
-    		plt.savefig('Graphiques/motif-'+site+'-semaine.png')
+                plt.figure(figsize=(12,10))
+    		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', 		shadow=False, colors=colors)
+    	 	#plt.axis('equal')
+    		plt.title('Nombre de réclamations par motifs \n pour '+site+' par semaine \n', fontsize=16)
+    		plt.savefig('Graphiques/4-motif-'+site+'-semaine.png')
 		plt.close()
 
 
@@ -461,10 +480,10 @@ class Model :
     		indexes = np.arange(len(labels))
     		width = 1
 
-    		plt.bar(indexes, values, width, color='rgbkymc')
+    		plt.bar(indexes, values, width, color=colors)
     		plt.xticks(indexes + width * 0.5, labels)
-     		plt.axis('equal')
-    		plt.title('Nombre de réclamations par tournee pour '+site+' par semaine ')
+     		#plt.axis('equal')
+    		plt.title('Nombre de réclamations par tournee \n pour '+site+' par semaine \n', fontsize=16)
     		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
 		plt.close()
 

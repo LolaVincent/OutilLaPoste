@@ -60,12 +60,12 @@ def readCSV() :
 		nb_mois= nb['nb_mois']
 
 		# Calcul des indicateurs
-				
+
 		motif_site = motifSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'], motif_site_date)
 		motif_site_semaine = motif_site['motif_site_semaine']
 		motif_site_mois = motif_site['motif_site_mois']
 		nb_motif_semaine = nbReclaSemaine(motif_site_semaine, nb_semaine)
-		
+
 		tournee_site = tourneeSitesSemaines(nb_mois, nb_semaine, mois_min, date_min_max['date_min'],  tournee_site_date)
 
 		tournee_site_semaine = tournee_site['tournee_site_semaine']
