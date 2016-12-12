@@ -16,6 +16,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+colors=['coral', 'lightpink', 'salmon', 'burlywood', 'indianred', 'tomato', 'lightsage', 'sandybrown', 'khaki', 'thistle', 'tan', 'darksalmon', 'lightcoral', 'lightblue', 'lightsalmon', 'rosybrown', 'lightgrey'  ]
+
 
 class Model :
     def __init__(self) :
@@ -140,21 +142,24 @@ class Model :
 
     	# Calcul du nombre de reclamation par motifs
     	nb_recla= Counter(nb_recla_semaine)
-    	name = nb_recla.keys()
+    	nb_recla=sorted(nb_recla.items(),key=lambda t : t[0])
 
-    	data = nb_recla.values()
+    	#data = nb_recla.values()
     	# Construction du camembert
 
-    	labels = name
-    	values = data
+    	labels = []
+    	values = []
+        for element in nb_recla:
+            labels.append(element[0])
+            values.append(element[1])
     	indexes = np.arange(len(labels))
     	width = 1
-    	plt.bar(indexes, values, width, color='rgbkymc')
+    	plt.bar(indexes, values, width, color=colors)
     	plt.xticks(indexes + width * 0.5, labels)
-    	plt.axis('equal')
+    	#plt.axis('equal')
 
-    	plt.title('nombre de réclamations par semaine')
-    	plt.savefig('Graphiques/' + 'nb_recla_semaine.png', fontsize='20')
+    	plt.title('nombre de réclamations par semaine',fontsize=20)
+    	plt.savefig('Graphiques/' + '2-nb_recla_semaine.png', fontsize='20')
         #plt.show()
         plt.close()
     # suppression des graphes dans le dossier
@@ -283,10 +288,13 @@ class Model :
     	# Construction du camembert
 
     	explode= np.zeros(len(nb_recla_motifs))
-    	plt.pie(data, explode=explode, labels=name, autopct = lambda x: str(round(x, 1)) + '%', shadow=False)
-    	plt.axis('equal')
-    	plt.title('Nombre de réclamations par motif')
-    	plt.savefig('Graphiques/' + 'nb_recla_motifs.png', fontsize='20')
+
+        plt.figure(figsize=(12,10))
+    	plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
+    	#plt.axis('equal')
+    	plt.title('Nombre de réclamations par motif pour l\'ensemble des sites', fontsize=20)
+        plt.legend(name,bbox_to_anchor=(1.13,0.30),prop={'size':9})
+        plt.savefig('Graphiques/1-' + 'nb_recla_motifs.png', dpi=120)
         print("On est à la fin de showmotifgraph juste avant le show")
     	#plt.show()
         print("On est à la fin de showmotifgraph juste avant le close")
