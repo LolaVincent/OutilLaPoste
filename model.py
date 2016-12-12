@@ -148,7 +148,7 @@ class Model :
     		width = 1
     		plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':9})
     		plt.title('Top 5 des réclamations par tournee \n pour '+site+' par semaine ', fontsize=16)
-    		plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png')
+    		plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png', dpi=120)
     		#plt.show()
     		plt.close()
 
@@ -174,7 +174,7 @@ class Model :
     	#plt.axis('equal')
 
     	plt.title('nombre de réclamations par semaine',fontsize=20)
-    	plt.savefig('Graphiques/' + '2-nb_recla_semaine.png', fontsize='20')
+    	plt.savefig('Graphiques/' + '2-nb_recla_semaine.png', fontsize='20', dpi=120)
         #plt.show()
         plt.close()
     # suppression des graphes dans le dossier
@@ -377,7 +377,8 @@ class Model :
     	for element in os.listdir(nomDossier):
     		if(element!="0pageDeGarde.png"):
     			listeImages.append(element)
-    	return listeImages
+    	listeImages.sort()
+        return listeImages
 
     "Fonction permettant d'afficher toutes les images dans un pdf"
     def fromPNGToPDF(self,pdfFileName, listImages, dir = ''):
@@ -467,8 +468,8 @@ class Model :
     					name = count.keys()
     					data = count.values()
     		elif num_semaine_mois.keys()[0] == 'mois':
-    			if motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
-    				count = Counter(motif_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
+    			if tournee_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']]:
+    				count = Counter(tournee_site_mois[int(num_semaine_mois['mois'])][site+num_semaine_mois['mois']])
     				name = count.keys()
     				data = count.values()
 
@@ -483,7 +484,7 @@ class Model :
     		plt.bar(indexes, values, width, color=colors)
     		plt.xticks(indexes + width * 0.5, labels)
      		#plt.axis('equal')
-    		plt.title('Nombre de réclamations par tournee \n pour '+site+' par semaine \n', fontsize=16)
+    		plt.title('Nombre de réclamations par tournee \n pour '+site+' par semaine', fontsize=16)
     		plt.savefig('Graphiques/tournee-'+site+'-semaine.png')
 		plt.close()
 
