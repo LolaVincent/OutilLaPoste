@@ -108,7 +108,7 @@ class Model :
 			#ici on récupère un dico faudra bien faire attention à comment le récupérer avec tes MessageBox
 			num_semaine_mois_trimestre = self.choixSemaineMois(nb_semaine,choixPeriode,valeurPeriode)
 
-			#self.showMotifGraph(motif) # voir si on le garde
+			self.showMotifGraph(motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre)
 			self.showNbReclaSemaineGraph(nb_recla_semaine['nb_recla_semaine'])
 			self.showNbReclaSemaineSiteGraph(nb_recla_semaine['nb_recla_semaine_site'], nb_semaine, date_min_max['date_min'], date_min_max['date_max'])
 			#self.showSiteGraph(sites) #voir si on le garde
@@ -335,28 +335,62 @@ class Model :
 		return num
 
 
-	 #Calcul du nombre de réclamations par motif et affichage sur un même graphe
-	def showMotifGraph (self,motif):
+	 #Calcul du nombre de réclamations par motif pour tous les sites selctionnés
+	def showMotifGraph (self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		print("HAHAHAHAH On est dans le code de Show Motif graph motherfucker")
 
 		# Calcul du nombre de reclamation par motifs
-		nb_recla_motifs = Counter(motif[1:len(motif)])
-		name = nb_recla_motifs.keys()
-
-		data = nb_recla_motifs.values()
 		# Construction du camembert
+		motifs = []
+		if num_semaine_mois_trimestre.keys()[0] == 'semaine':
+			if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
+				for i in range(int(num_semaine_mois_trimestre.values()[0][0]), int(num_semaine_mois_trimestre.values()[0][1])+1):
+					print i
+					for site in motif_site_semaine[str(i)]:
+						print site
+						for motif in motif_site_semaine[str(i)][site]:
+							motifs.append(motif)
+				nb_motifs = Counter(motifs)
+				print nb_motifs
+				name = nb_motifs.keys()
+				data = nb_motifs.values()
+				plt.title('Nombre de réclamations par motifs pour l\'ensemble des sites\n pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+num_semaine_mois_trimestre.values()[0][1], fontsize=16)
 
-		explode= np.zeros(len(nb_recla_motifs))
+			elif motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+				for site in motif_site_semaine[num_semaine_mois_trimestre['semaine']]:
+					for motif in motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+						motifs.append(motif)
+				nb_motifs = Counter(motifs)
+				name = nb_motifs.keys()
+				data = nb_motifs.values()
+				plt.title('Nombre de réclamations par motifs l\'ensemble des sites \n pour la semaine '+num_semaine_mois_trimestre['semaine'], fontsize=16)
+		#mois
+		elif num_semaine_mois_trimestre.keys()[0] == 'mois':
+			if motif_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+				for site in motif_site_semaine[num_semaine_mois_trimestre['mois']]:
+					for motif in motif_site_semaine[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+						motifs.append(motif)
+				nb_motifs = Counter(motifs)
+				name = nb_motifs.keys()
+				data = nb_motifs.values()
+				plt.title('Nombre de réclamations par motifs \n pour l\'ensemble des sites pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
+		#trimestre
+		elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
+			for site in motif_site_semaine[num_semaine_mois_trimestre['trimestre']]:
+				for motif in motif_site_semaine[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+					   motifs.append(motif)
+			nb_motifs = Counter(motifs)
+			name = nb_motifs.keys()
+			data = nb_motifs.values()
+			plt.title('Nombre de réclamations par motifs \n pour '+site+' pour l\'ensemble des sites pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
 
+		explode= np.zeros(len(nb_motifs))
 		plt.figure(figsize=(12,10))
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		#plt.axis('equal')
-		plt.title('Nombre de réclamations par motif pour l\'ensemble des sites', fontsize=20)
+		
 		plt.legend(name,bbox_to_anchor=(1.13,0.30),prop={'size':9})
 		plt.savefig('Graphiques/1-' + 'nb_recla_motifs.png', dpi=120)
-		print("On est à la fin de showmotifgraph juste avant le show")
-		#plt.show()
-		print("On est à la fin de showmotifgraph juste avant le close")
 		plt.close()
 		print("On est à la fin de showmotifgraph juste après le close") 
 
@@ -367,7 +401,7 @@ class Model :
 		print nb_recla_semaine
 		nb_recla_semaine=sorted(nb_recla_semaine.items(),key=lambda t : t[0])
 
-		# Construction du camembert
+		# Construction du graphe
 
 		labels = []
 		values = []
@@ -467,7 +501,7 @@ class Model :
 			explode = np.zeros(len(data))
 			plt.figure(figsize=(12,10))
 			plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%',		 shadow=False, colors=colors)
-			 #plt.axis('equal')
+			plt.legend(name,bbox_to_anchor=(1.13,0.30),prop={'size':10})
 			plt.savefig('Graphiques/4-motif-'+site+'-semaine.png')
 			plt.close()
 
@@ -509,8 +543,7 @@ class Model :
 						plt.title('Nombre de réclamations par tournee \n pour '+site+' pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
 
 
-
-				# Construction du camembert
+				# Construction du graphe
 			labels = name
 			values = data
 
