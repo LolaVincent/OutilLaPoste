@@ -34,15 +34,17 @@ class Model :
 		return listeFichiers
 
 	def readSites(self) :
-		liste_sites=[]
+		liste_sites={}
 		l_sites = csv.reader(open("liste_sites","rb"))
 		for row in l_sites:
-			liste_sites.append(row[0])
+			liste_sites[row[0]] = {}
+			liste_sites[row[0]]['nombre_tournee'] = row[1]
+			liste_sites[row[0]]['liste_equipe'] = row[2]
+		for site in liste_sites:
+			liste_sites[site]['liste_equipe'] = liste_sites[site]['liste_equipe'].split('_')
+			for equipe in range(0,len(liste_sites[site]['liste_equipe'])):
+				liste_sites[site]['liste_equipe'][equipe] = liste_sites[site]['liste_equipe'][equipe].split('-')
 		return liste_sites
-
-
-
-
 
 	def readCSV(self,nomFichier,listeSitesCoches,choixPeriode,valeurPeriode) :
 	#nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
@@ -56,22 +58,26 @@ class Model :
 			nb_recla = {}
 			tournee_site_date={}
 			motif_site_date = {}
-			liste_sites = []
+			#liste_sites = []
 			selection_site = []
 
 			#Suppression des graphes dans le dossier
 			self.removeFiles()
 
 			#lecture de la liste des sites
-			l_sites = csv.reader(open("liste_sites","rb"))
-			for row in l_sites:
-			  liste_sites.append(row[0])
-
-
-
-		#self.ajoutSite()
-		#self.supprimerSite()
-			self.selectionSites(liste_sites, sites, nb_recla, motif_site_date, tournee_site_date, selection_site)
+			l_sites = self.readSites()
+			#self.modifierNbTournee(l_sites)
+			#self.ajoutSite('test', l_sites)
+			#self.ajoutEquipe(l_sites)
+			self.ajoutTournee(l_sites)
+			self.supprimerSite(nomFichierSupprime, l_sites)
+			#self.supprimerSite('ESTREES', l_sites)
+			self.supprimerEquipe(nomFichierSupprime,l_sites)
+			#self.supprimerEquipe('compiegne',l_sites)
+			self.supprimerTournee(nomFichierSupprime,l_sites)
+			#self.supprimerTournee('compiegne',l_sites)
+			self.MAJListeSites(l_sites)
+			self.selectionSites(sites, nb_recla, motif_site_date, tournee_site_date, selection_site)
 
 			# détermination des dates min et max et du nombre de semaines
 			#lecture du csv : lecture des motifs, separation par site
@@ -125,34 +131,110 @@ class Model :
 			if not x in '0pageDeGarde.png' :
 				print("haha")
 				os.remove(path+'/'+x)
+	
+	def modifierNbTournee(self, l_sites):
+		site = raw_input("nom du site pour lequel vous voulez modifier le nombre de tournée")
+		nombre = raw_input("nombre de tournée")
+		l_sites[site.upper()]['nombre_tournee'] = int(nombre)
 
 	# ajout d'un site dans le fichier et dans la liste courante
-	def ajoutSite(self, nomNouveauFichier):
+	def ajoutSite(self, nomNouveauFichier, l_sites):
 		site = nomNouveauFichier
 		site = site.upper()
-		#liste_sites.append(site)
-		c = csv.writer(open("liste_sites", "a"))
-		c.writerow([site])
+		nombreTournee = raw_input('Nombre de tournee \n')
+		l_sites[site] = {}
+		l_sites[site]['nombre_tournee'] = nombreTournee
+		rep = raw_input('ajouter une equipe -> taper 1')
+		equipes = []
+		while rep == '1':
+			rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1')
+			tournees = []
+			while rep_2 == '1':
+				tournee = raw_input('tournee = ')
+				tournees.append(tournee)
+				rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1')
+			equipes.append(tournees)
+			rep = raw_input('ajouter une equipe -> taper 1')
+		l_sites[site]['liste_equipe'] = equipes
 
+	def ajoutEquipe(self, l_sites):
+		site = raw_input('nom du site auquel vous voulez ajouter une equipe\n')
+		rep = raw_input('ajouter une equipe -> taper 1\n')
+		equipes = []
+		while rep == '1':
+			rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+			tournees = []
+			while rep_2 == '1':
+				tournee = raw_input('tournee = ')
+				tournees.append(tournee)
+				rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+			l_sites[site]['liste_equipe'].append(tournees)
+			rep = raw_input('ajouter une equipe -> taper 1')
+		if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
+			self.modifierNbTournee(l_sites)
+		
+		
+	def ajoutTournee(self, l_sites):
+		site = raw_input('nom du site auquel vous voulez ajouter une tournee')
+		numEquipe = raw_input('Numero de lequipe:\n')
+		rep = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+		while rep == '1':
+			tournee = raw_input('tournee = ')
+			l_sites[site]['liste_equipe'][int(numEquipe)-1].append(tournee)
+			rep = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+		if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
+			self.modifierNbTournee(l_sites)
+		print l_sites
+	
 	# suppression d'un site dans le fichier et dans la liste courante
-	def supprimerSite(self,nomFichierSupprime):
+	def supprimerSite(self,nomFichierSupprime, l_sites):
+		print 'SUPPRESSION SITE'
+		print l_sites
 		site = nomFichierSupprime
 		site = site.upper()
+		l_sites.pop(site, None)
+
+	def supprimerEquipe(self,nomFichierSupprime,l_sites):
+		print 'SUPPRESSION EQUIPE'
+		site = nomFichierSupprime
+		site = site.upper()
+		numEquipe = raw_input('Numero de lequipe:\n')
+		l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
+	
+	def supprimerEquipe(self,nomFichierSupprime,l_sites):
+		print 'SUPPRESSION EQUIPE'
+		site = nomFichierSupprime
+		site = site.upper()
+		numEquipe = raw_input('Numero de lequipe:\n')
+		l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
+	
+	def supprimerTournee(self,nomFichierSupprime,l_sites):
+		print 'SUPPRESSION TOURNEE'
+		site = nomFichierSupprime
+		site = site.upper()
+		numEquipe = raw_input('Numero de lequipe:\n')
+		nomTournee = raw_input('Nom de la tournée:\n')
+		l_sites[site]['liste_equipe'][int(numEquipe)-1].remove(nomTournee)
+		
+	def MAJListeSites(self, l_sites):
 		fichier = open("liste_sites", "rb")
-		c_write = csv.writer(open("liste_sites_temp", "a"))
-		c_read = csv.reader(fichier, delimiter=';')
+		c_write = csv.writer(open("liste_sites_temp", "wb"))
 
 		#ecriture de la nouvelle liste dans un fichier temporaire puis suppression
-		for row in c_read:
-			if site not in row[0]:
-				c_write.writerow(row)
+		for site in l_sites:
+			equipes = ""
+			for equipe in range(0,len(l_sites[site]['liste_equipe'])):
+				tournees = str(l_sites[site]['liste_equipe'][equipe][0])
+				for tournee in range(1,len(l_sites[site]['liste_equipe'][equipe])):
+					tournees = tournees+'-'+l_sites[site]['liste_equipe'][equipe][tournee]
+				equipes = equipes+'_'+tournees
+			c_write.writerow([site,l_sites[site]['nombre_tournee'],equipes[1:]])
 		os.remove("liste_sites")
 		os.renames("liste_sites_temp", "liste_sites")
+		
 
-
-	def selectionSites(self,liste_sites, sites, nb_recla, motif_site_date, tournee_site_date, selection_site):
+	def selectionSites(self, sites, nb_recla, motif_site_date, tournee_site_date, selection_site):
 		#ajout du site s'il est demandé
-		print(liste_sites)
 		print(self.listeSitesCoches)
 		for site in self.listeSitesCoches:
 	#		question = raw_input("Souhaitez-vous les indicateurs pour "+site+" ?")
