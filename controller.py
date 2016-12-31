@@ -9,23 +9,34 @@ from vue3 import *
 class Controller():
     def __init__(self):
         self.model=Model()
-        a=list()
-        a.append("TEst")
         self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
         self.vue.bouton0.bind("<Button-1>",self.openChoices)
         self.vue.bouton1.bind("<Button-1>",self.newSite)
         self.vue.bouton2.bind("<Button-1>",self.deleteSite)
 
 
+
     def run(self):
         print("HAHA")
         self.vue.fenetre.mainloop()
+
+
+
+    def newSiteV2(self):
+        self.fenetreNouveauSite=FenetreInputSite(1)
+        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSite)
+
 
     def newSite(self,event):
         self.fenetreNouveauSite=FenetreInputSite(1)
         self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSite)
 
+
     def deleteSite(self,event):
+        self.fenetreNouveauSite=FenetreInputSite(2)
+        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmDeleteSite)
+
+    def deleteSiteV2(self):
         self.fenetreNouveauSite=FenetreInputSite(2)
         self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmDeleteSite)
 

@@ -69,12 +69,12 @@ class Model :
 			#self.modifierNbTournee(l_sites)
 			#self.ajoutSite('test', l_sites)
 			#self.ajoutEquipe(l_sites)
-			self.ajoutTournee(l_sites)
-			self.supprimerSite(nomFichierSupprime, l_sites)
+		#	self.ajoutTournee(l_sites)
+		#	self.supprimerSite(nomFichierSupprime, l_sites)
 			#self.supprimerSite('ESTREES', l_sites)
-			self.supprimerEquipe(nomFichierSupprime,l_sites)
+		#	self.supprimerEquipe(nomFichierSupprime,l_sites)
 			#self.supprimerEquipe('compiegne',l_sites)
-			self.supprimerTournee(nomFichierSupprime,l_sites)
+		#	self.supprimerTournee(nomFichierSupprime,l_sites)
 			#self.supprimerTournee('compiegne',l_sites)
 			self.MAJListeSites(l_sites)
 			self.selectionSites(sites, nb_recla, motif_site_date, tournee_site_date, selection_site)
@@ -93,15 +93,15 @@ class Model :
 			print(nb_semaine)
 			print(nb_mois)
 			# Calcul des indicateurs
-			
+
 			nb_recla_semaine = self.nbReclaSemaine(nb_recla, selection_site, date_min_max['date_min'], date_min_max['date_max'])
-			
+
 			motif_site = self.motifSitesSemaines(date_min_max['date_min'], date_min_max['date_max'], motif_site_date)
 			motif_site_semaine = motif_site['motif_site_semaine']
 			motif_site_mois = motif_site['motif_site_mois']
 			motif_site_trimestre = motif_site['motif_site_trimestre']
 
-			
+
 			tournee_site = self.tourneeSitesSemaines(date_min_max['date_min'], date_min_max['date_max'],  tournee_site_date)
 			tournee_site_semaine = tournee_site['tournee_site_semaine']
 			tournee_site_mois = tournee_site['tournee_site_mois']
@@ -131,7 +131,7 @@ class Model :
 			if not x in '0pageDeGarde.png' :
 				print("haha")
 				os.remove(path+'/'+x)
-	
+
 	def modifierNbTournee(self, l_sites):
 		site = raw_input("nom du site pour lequel vous voulez modifier le nombre de tournée")
 		nombre = raw_input("nombre de tournée")
@@ -172,8 +172,8 @@ class Model :
 			rep = raw_input('ajouter une equipe -> taper 1')
 		if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
 			self.modifierNbTournee(l_sites)
-		
-		
+
+
 	def ajoutTournee(self, l_sites):
 		site = raw_input('nom du site auquel vous voulez ajouter une tournee')
 		numEquipe = raw_input('Numero de lequipe:\n')
@@ -185,7 +185,7 @@ class Model :
 		if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
 			self.modifierNbTournee(l_sites)
 		print l_sites
-	
+
 	# suppression d'un site dans le fichier et dans la liste courante
 	def supprimerSite(self,nomFichierSupprime, l_sites):
 		print 'SUPPRESSION SITE'
@@ -200,14 +200,14 @@ class Model :
 		site = site.upper()
 		numEquipe = raw_input('Numero de lequipe:\n')
 		l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
-	
+
 	def supprimerEquipe(self,nomFichierSupprime,l_sites):
 		print 'SUPPRESSION EQUIPE'
 		site = nomFichierSupprime
 		site = site.upper()
 		numEquipe = raw_input('Numero de lequipe:\n')
 		l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
-	
+
 	def supprimerTournee(self,nomFichierSupprime,l_sites):
 		print 'SUPPRESSION TOURNEE'
 		site = nomFichierSupprime
@@ -215,7 +215,7 @@ class Model :
 		numEquipe = raw_input('Numero de lequipe:\n')
 		nomTournee = raw_input('Nom de la tournée:\n')
 		l_sites[site]['liste_equipe'][int(numEquipe)-1].remove(nomTournee)
-		
+
 	def MAJListeSites(self, l_sites):
 		fichier = open("liste_sites", "rb")
 		c_write = csv.writer(open("liste_sites_temp", "wb"))
@@ -231,7 +231,7 @@ class Model :
 			c_write.writerow([site,l_sites[site]['nombre_tournee'],equipes[1:]])
 		os.remove("liste_sites")
 		os.renames("liste_sites_temp", "liste_sites")
-		
+
 
 	def selectionSites(self, sites, nb_recla, motif_site_date, tournee_site_date, selection_site):
 		#ajout du site s'il est demandé
@@ -289,7 +289,7 @@ class Model :
 		print nb_mois
 		return {'nb_semaines':nb_semaines, 'nb_mois': nb_mois}
 
-   
+
 
 		# à modifier on compte le nombre de réclamations pas le nombre de semaine
 	def nbReclaSemaine(self, nb_recla, selection_site, date_min, date_max):
@@ -335,7 +335,7 @@ class Model :
 			tournee_site_mois[str(i)]= tournee_lieu
 		print 'tournee_site_mois'
 		print tournee_site_mois
-		
+
 		for i in range(1, 4+1):
 			tournee_lieu = {}
 			for site in tournee_site_date:
@@ -379,7 +379,7 @@ class Model :
 			motif_site_mois[str(i)]= motif_lieu
 		print 'motif_site_mois'
 		print motif_site_mois
-		
+
 		for i in range(1, 4+1):
 			motif_lieu = {}
 			for site in motif_site_date:
@@ -470,11 +470,11 @@ class Model :
 		plt.figure(figsize=(12,10))
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		#plt.axis('equal')
-		
+
 		plt.legend(name,bbox_to_anchor=(1.13,0.30),prop={'size':9})
 		plt.savefig('Graphiques/1-' + 'nb_recla_motifs.png', dpi=120)
 		plt.close()
-		print("On est à la fin de showmotifgraph juste après le close") 
+		print("On est à la fin de showmotifgraph juste après le close")
 
 
 	# Calcul du nombre de reclamation pour tous les sites séléctionnés par semaine
@@ -500,14 +500,14 @@ class Model :
 		plt.savefig('Graphiques/' + '2-nb_recla_semaine.png', fontsize='20', dpi=120)
 		#plt.show()
 		plt.close()
-		
-		
+
+
 		# Calcul du nombre de reclamation par site pour chaque semaine du fichier
 		# ok mais voir pour bien séparer les barres pour chaque semaine
 		# ajouter le total par site
 	def showNbReclaSemaineSiteGraph(self, nb_recla_semaine_site, nb_semaine, date_min, date_max):
 		print 'SHOW NB RECLA SEMAINE SITE'
-		
+
 		fig = plt.figure(figsize=(12,10))
 		ax = fig.add_subplot(111)
 		ind = np.arange(nb_semaine)
@@ -519,16 +519,16 @@ class Model :
 			print site
 			print nb_recla_semaine_site[site]
 			nb_recla_semaine_site[site]=sorted(nb_recla_semaine_site[site].items(), key=lambda t : t[0])
-			
+
 			values = []
-			
+
 			for element in nb_recla_semaine_site[site]:
 				values.append(element[1])
 			ind = ind+width
 			ax.bar(ind, values, width, color=colors[i])
 			i = i + 1
-			
-		
+
+
 		# Construction du camembert
 		ax.legend(labels, prop={'size':12})
 		xTickMarks = ['Semaine '+str(i) for i in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1)]
@@ -540,12 +540,12 @@ class Model :
 		plt.savefig('Graphiques/' + '3-nb_recla_semaine_site.png', fontsize='20', dpi=120)
 		#plt.show()
 		plt.close()
-		
-		
+
+
 		# Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
 	def showMotifSiteWeekGraph(self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		for site in selection_site:
-			#semaines 
+			#semaines
 			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
 					semaines = {}
@@ -641,7 +641,7 @@ class Model :
 
 
 	""" Calcul du nombre de réclamations par site et affichage des graphes pour chaque site dans un png -> on garde ??? pour toutes les semaines du fichier, pas interessant
-	
+
 	def showSiteGraph(self,sites) :
 		print("HAHAHAH on est dans le code de ShowShiteGraph")
 		for site in sites:
@@ -741,5 +741,3 @@ class Model :
 			pdf.image(dir + str(page) , 0, 0)
 
 		pdf.output( pdfFileName + ".pdf", "F")
-
-

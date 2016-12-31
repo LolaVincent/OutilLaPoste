@@ -18,8 +18,8 @@ class FenetrePrincipale :
         self.menubar = Menu(self.fenetre)
 
         self.menu1 = Menu(self.menubar, tearoff=0)
-        self.menu1.add_command(label="Ajout d'un site")
-        self.menu1.add_command(label="Suppression d'un site")
+        self.menu1.add_command(label="Ajout d'un site", command=self.controller.newSiteV2)
+        self.menu1.add_command(label="Suppression d'un site", command=self.controller.deleteSiteV2)
         self.menubar.add_cascade(label="Sites", menu=self.menu1)
 
         self.menu2 = Menu(self.menubar, tearoff=0)
@@ -27,15 +27,20 @@ class FenetrePrincipale :
         self.menubar.add_cascade(label="Historique", menu=self.menu2)
 
         self.menu3 = Menu(self.menubar, tearoff=0)
-        self.menu3.add_command(label="Equipes")
-        self.menu3.add_command(label="Tournées")
-        self.menubar.add_cascade(label="Paramètres", menu=self.menu3)
-
-
+        self.menu3.add_command(label="Ajouter une équipe")
+        self.menu3.add_command(label="Supprimer une équipe")
+        self.menubar.add_cascade(label="Equipes", menu=self.menu3)
 
         self.menu4 = Menu(self.menubar, tearoff=0)
-        self.menu4.add_command(label="A propos")
-        self.menubar.add_cascade(label="Aide", menu=self.menu4)
+        self.menu4.add_command(label="Ajouter une tournée")
+        self.menu4.add_command(label="Supprimer une tournée")
+        self.menubar.add_cascade(label="Tournées", menu=self.menu4)
+
+
+
+        self.menu5 = Menu(self.menubar, tearoff=0)
+        self.menu5.add_command(label="A propos")
+        self.menubar.add_cascade(label="Aide", menu=self.menu5)
 
         # Quel fruit a été sélectionné ?
         self.cSVSelect	= StringVar()
