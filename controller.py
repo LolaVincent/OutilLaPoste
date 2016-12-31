@@ -5,6 +5,8 @@ from vue import *
 from model import *
 from vue2 import *
 from vue3 import *
+from vue4 import *
+from vue5 import *
 
 class Controller():
     def __init__(self):
@@ -24,12 +26,12 @@ class Controller():
 
     def newSiteV2(self):
         self.fenetreNouveauSite=FenetreInputSite(1)
-        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSite)
+        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSiteStep1)
 
 
     def newSite(self,event):
         self.fenetreNouveauSite=FenetreInputSite(1)
-        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSite)
+        self.fenetreNouveauSite.bouton.bind("<Button-1>",self.confirmNewSiteStep1)
 
 
     def deleteSite(self,event):
@@ -49,17 +51,67 @@ class Controller():
         self.newController=Controller()
         self.newController.run()
 
-    def confirmNewSite(self,event):
+    def confirmNewSiteStep1(self,event):
     #    print(str(self.fenetreNouveauSite.nomSite.get()))
     #    print(str(self.fenetreNouveauSite.nomSite))
     #    print(str(self.fenetreNouveauSite.inputBox))
         print(str(self.fenetreNouveauSite.inputBox.get()))
     #    print("VOICI LA VALEUR DU TEXTE ENTRE DANS LA BOX "+ str(self.fenetreNouveauSite.nomSite))
-        self.model.ajoutSite(str(self.fenetreNouveauSite.inputBox.get()))
+
+        nomNouveauSite=str(self.fenetreNouveauSite.inputBox.get())
+        nombreNouvellesEquipes=int(self.fenetreNouveauSite.sbNbEquipe.get())
+        nombreNouvellesTournees=int(self.fenetreNouveauSite.sbNbTournee.get())
+        self.fenetreConfig2NouveauSite=FenetreInputNombreTournees(nomNouveauSite,nombreNouvellesEquipes,nombreNouvellesTournees)
+        self.fenetreConfig2NouveauSite.confirmButton.bind("<Button-1>",self.confirmNewSiteStep2)
         self.fenetreNouveauSite.master.destroy()
+
+    def confirmNewSiteStep2(self,event):
+        nomSite=self.fenetreConfig2NouveauSite.nomSite
+        nombreEquipes=self.fenetreConfig2NouveauSite.nombreEquipes
+        nombreTotalTournees=self.fenetreConfig2NouveauSite.nombreTotalTournees
+        nombreTourneesParEquipe=list()
+        ind=0
+        while ind<len(self.fenetreConfig2NouveauSite.spinboxTournees):
+            valeur=int(self.fenetreConfig2NouveauSite.spinboxTournees[ind].get())
+            nombreTourneesParEquipe.append(valeur)
+            ind=ind+1
+        self.fenetreConfig3NouveauSite=FenetreInputNomsTournees(nomSite,nombreEquipes,nombreTotalTournees,nombreTourneesParEquipe)
+        self.fenetreConfig3NouveauSite.confirmButton.bind("<Button-1>",self.confirmNewSiteStep3)
+        self.fenetreConfig2NouveauSite.master.destroy()
+
+    def confirmNewSiteStep3(self,event):
+        nomsToutesTournees=list()
+
+        i=0
+        nomSite=self.fenetreConfig3NouveauSite.nomSite
+        nombreTotalTournees=self.fenetreConfig3NouveauSite.nombreTotalTournees
+
+        while i < len(self.fenetreConfig3NouveauSite.nomsTourneesEquipes):
+            j=0
+            nomsTournees=list()
+            while j < len(self.fenetreConfig3NouveauSite.nomsTourneesEquipes[i]):
+                unNom=str(self.fenetreConfig3NouveauSite.nomsTourneesEquipes[i][j].get())
+                nomsTournees.append(unNom)
+                j=j+1
+            nomsToutesTournees.append(nomsTournees)
+            i=i+1
+        print(nomsToutesTournees)
+        self.model.ajoutSite(nomSite,nombreTotalTournees,nomsToutesTournees)
+        self.fenetreConfig3NouveauSite.master.destroy()
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
+
+
+
+
+
+
+        #self.model.ajoutSite(str(self.fenetreNouveauSite.inputBox.get()))
+        #self.fenetreNouveauSite.master.destroy()
+        #self.vue.fenetre.destroy()
+        #self.newController=Controller()
+        #self.newController.run()
 
 
     def openChoices(self,event):

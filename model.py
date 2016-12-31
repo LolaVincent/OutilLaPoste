@@ -23,6 +23,7 @@ class Model :
 	def __init__(self) :
 		print("Le modèle est bien instancié")
 		self.listeSitesCoches=list()
+		self.l_sites={}
 
 
 	""" fonction de lecture du CSV """
@@ -66,6 +67,7 @@ class Model :
 
 			#lecture de la liste des sites
 			l_sites = self.readSites()
+			self.l_sites=l_sites
 			#self.modifierNbTournee(l_sites)
 			#self.ajoutSite('test', l_sites)
 			#self.ajoutEquipe(l_sites)
@@ -76,7 +78,7 @@ class Model :
 			#self.supprimerEquipe('compiegne',l_sites)
 		#	self.supprimerTournee(nomFichierSupprime,l_sites)
 			#self.supprimerTournee('compiegne',l_sites)
-			self.MAJListeSites(l_sites)
+			self.MAJListeSites(self.l_sites)
 			self.selectionSites(sites, nb_recla, motif_site_date, tournee_site_date, selection_site)
 
 			# détermination des dates min et max et du nombre de semaines
@@ -132,30 +134,47 @@ class Model :
 				print("haha")
 				os.remove(path+'/'+x)
 
-	def modifierNbTournee(self, l_sites):
+	def modifierNbTournee(self):
 		site = raw_input("nom du site pour lequel vous voulez modifier le nombre de tournée")
 		nombre = raw_input("nombre de tournée")
-		l_sites[site.upper()]['nombre_tournee'] = int(nombre)
+		self.l_sites[site.upper()]['nombre_tournee'] = int(nombre)
 
 	# ajout d'un site dans le fichier et dans la liste courante
-	def ajoutSite(self, nomNouveauFichier, l_sites):
+	def ajoutSite(self, nomNouveauFichier,nombreTournee,nomsTournees):
 		site = nomNouveauFichier
 		site = site.upper()
-		nombreTournee = raw_input('Nombre de tournee \n')
-		l_sites[site] = {}
-		l_sites[site]['nombre_tournee'] = nombreTournee
-		rep = raw_input('ajouter une equipe -> taper 1')
+		#nombreTournee = raw_input('Nombre de tournee \n')
+		self.l_sites[site] = {}
+		self.l_sites[site]['nombre_tournee'] = nombreTournee
+	#	rep = raw_input('ajouter une equipe -> taper 1')
 		equipes = []
-		while rep == '1':
-			rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1')
+		x=0
+
+
+	#	while rep == '1':
+		print("Voici le contenu de nomsTournees")
+		print(nomsTournees)
+		print("Voici la taille de nomTournees")
+		print(len(nomsTournees))
+		while x<len(nomsTournees):
+
+			#rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1')
 			tournees = []
-			while rep_2 == '1':
-				tournee = raw_input('tournee = ')
+			y=0
+			while y < len(nomsTournees[x]):
+				tournee = str(nomsTournees[x][y])
 				tournees.append(tournee)
-				rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1')
+				y=y+1
+				#rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1')
 			equipes.append(tournees)
-			rep = raw_input('ajouter une equipe -> taper 1')
-		l_sites[site]['liste_equipe'] = equipes
+			x=x+1
+			#rep = raw_input('ajouter une equipe -> taper 1')
+		print("Voici la variable equipes")
+		print(equipes)
+		self.l_sites[site]['liste_equipe'] = equipes
+		print "Voici l_sites"
+		print(self.l_sites)
+		self.MAJListeSites(self.l_sites)
 
 	def ajoutEquipe(self, l_sites):
 		site = raw_input('nom du site auquel vous voulez ajouter une equipe\n')
@@ -187,12 +206,13 @@ class Model :
 		print l_sites
 
 	# suppression d'un site dans le fichier et dans la liste courante
-	def supprimerSite(self,nomFichierSupprime, l_sites):
+	def supprimerSite(self,nomFichierSupprime):
 		print 'SUPPRESSION SITE'
 		print l_sites
 		site = nomFichierSupprime
 		site = site.upper()
-		l_sites.pop(site, None)
+		self.l_sites.pop(site, None)
+		self.MAJListeSites(self.l_sites)
 
 	def supprimerEquipe(self,nomFichierSupprime,l_sites):
 		print 'SUPPRESSION EQUIPE'
@@ -217,6 +237,9 @@ class Model :
 		l_sites[site]['liste_equipe'][int(numEquipe)-1].remove(nomTournee)
 
 	def MAJListeSites(self, l_sites):
+		print("On est dans MAJListeSites")
+		print("Voici le contenu de l_sites")
+		print(l_sites)
 		fichier = open("liste_sites", "rb")
 		c_write = csv.writer(open("liste_sites_temp", "wb"))
 
