@@ -23,7 +23,7 @@ class Model :
 	def __init__(self) :
 		print("Le modèle est bien instancié")
 		self.listeSitesCoches=list()
-		self.l_sites={}
+		self.l_sites=self.readSites()
 
 
 	""" fonction de lecture du CSV """
@@ -208,7 +208,6 @@ class Model :
 	# suppression d'un site dans le fichier et dans la liste courante
 	def supprimerSite(self,nomFichierSupprime):
 		print 'SUPPRESSION SITE'
-		print l_sites
 		site = nomFichierSupprime
 		site = site.upper()
 		self.l_sites.pop(site, None)
