@@ -10,7 +10,13 @@ class FenetreInputNomsTournees:
 
 
         self.master = Tk()
-        self.master.wm_title("Caractéristiques des  " + nomSite + ":")
+        if nombreTotalTournees==0:
+            self.master.wm_title("Noms des nouvelles tournées de  " + nomSite + ":")
+        if nombreTotalTournees!=0:
+            self.master.wm_title("Noms des tournées de  " + nomSite + ":")
+
+
+
         self.partieEquipe = LabelFrame(self.master, text="Noms des tournées")
         self.partieEquipe.grid()
         self.nomsTourneesEquipes=list()
@@ -24,7 +30,7 @@ class FenetreInputNomsTournees:
         print(nombreTourneesSurEquipe)
         print("Le nombre d'équipes est")
         print(nombreEquipes)
-        while i<nombreEquipes:
+        while i<int(nombreEquipes):
             print("La valeur de i est ")
             print(i)
             nomsChaqueTournee=list()

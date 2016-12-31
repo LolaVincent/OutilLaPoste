@@ -27,7 +27,8 @@ class FenetrePrincipale :
         self.menubar.add_cascade(label="Historique", menu=self.menu2)
 
         self.menu3 = Menu(self.menubar, tearoff=0)
-        self.menu3.add_command(label="Ajouter une équipe")
+        self.menu3.add_command(label="Ajouter une équipe",command= self.controller.confirmAddTeamStep1)
+
         self.menu3.add_command(label="Supprimer une équipe")
         self.menubar.add_cascade(label="Equipes", menu=self.menu3)
 
@@ -42,7 +43,7 @@ class FenetrePrincipale :
         self.menu5.add_command(label="A propos")
         self.menubar.add_cascade(label="Aide", menu=self.menu5)
 
-        # Quel fruit a été sélectionné ?
+        # Quel CSV a été sélectionné ?
         self.cSVSelect	= StringVar()
         self.stockCSV	=list()
 
@@ -90,6 +91,7 @@ class FenetrePrincipale :
         self.listCheckButton=list()
         self.listVariableCheckButton=list()
         self.listTextCheckButton=list()
+        self.listeSites=listeSites
         i=0
         for element in listeSites:
             variable_i=BooleanVar()

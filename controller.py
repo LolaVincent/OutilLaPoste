@@ -7,6 +7,8 @@ from vue2 import *
 from vue3 import *
 from vue4 import *
 from vue5 import *
+from vue6 import *
+from vue7 import *
 
 class Controller():
     def __init__(self):
@@ -112,6 +114,62 @@ class Controller():
         #self.vue.fenetre.destroy()
         #self.newController=Controller()
         #self.newController.run()
+    def confirmAddTeamStep1(self):
+        listeSites=self.vue.listeSites
+        self.fenetreConfig1ModifySite=FenetreModifySite(listeSites)
+        self.fenetreConfig1ModifySite.bouton.bind("<Button-1>",self.confirmAddTeamStep2)
+
+    def confirmAddTeamStep2(self,event):
+        print("Voici le nom du site entré")
+        print(self.fenetreConfig1ModifySite.listeSites.get())
+        print("Voici le nombre de nouvelles équipes à enregistrer")
+        print(self.fenetreConfig1ModifySite.sbNbEquipe.get())
+        self.fenetetreConfig2ModifySite=FenetreModifySite2(self.fenetreConfig1ModifySite.listeSites.get(),self.fenetreConfig1ModifySite.sbNbEquipe.get())
+        self.fenetetreConfig2ModifySite.confirmButton.bind("<Button-1>",self.confirmAddTeamStep3)
+        self.fenetreConfig1ModifySite.master.destroy()
+
+    def confirmAddTeamStep3(self,event):
+        print("ON EST DANS confirmAddTeamStep3 !!!")
+        nomSite=self.fenetetreConfig2ModifySite.nomSite
+        nombreEquipes=self.fenetetreConfig2ModifySite.nombreEquipes
+        valeursSpinbox=list()
+        i=0
+        while i<len(self.fenetetreConfig2ModifySite.spinboxTournees):
+            valeur=int(self.fenetetreConfig2ModifySite.spinboxTournees[i].get())
+            valeursSpinbox.append(valeur)
+            i=i+1
+        print("Voici la  valeur de la SpinBox :")
+        print(valeursSpinbox)
+        print("Valeur de la spin box terminée")
+        print("Voici également la valeur du nombre d'équipes")
+        print(nombreEquipes)
+        self.fenetreConfig3ModifySite=FenetreInputNomsTournees(nomSite,nombreEquipes,0,valeursSpinbox)
+
+
+        self.fenetreConfig3ModifySite.confirmButton.bind("<Button-1>",self.confirmAddTeamStep4)
+
+    def confirmAddTeamStep4(self,event):
+        nomsToutesTournees=list()
+
+        i=0
+        nomSite=self.fenetreConfig3ModifySite.nomSite
+
+        while i < len(self.fenetreConfig3ModifySite.nomsTourneesEquipes):
+            j=0
+            nomsTournees=list()
+            while j < len(self.fenetreConfig3ModifySite.nomsTourneesEquipes[i]):
+                unNom=str(self.fenetreConfig3ModifySite.nomsTourneesEquipes[i][j].get())
+                nomsTournees.append(unNom)
+                j=j+1
+            nomsToutesTournees.append(nomsTournees)
+            i=i+1
+        print(nomsToutesTournees)
+        self.model.ajoutEquipe(nomSite,nomsToutesTournees)
+        self.fenetreConfig3ModifySite.master.destroy()
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
+
 
 
     def openChoices(self,event):

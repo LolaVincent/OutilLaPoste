@@ -176,21 +176,26 @@ class Model :
 		print(self.l_sites)
 		self.MAJListeSites(self.l_sites)
 
-	def ajoutEquipe(self, l_sites):
-		site = raw_input('nom du site auquel vous voulez ajouter une equipe\n')
-		rep = raw_input('ajouter une equipe -> taper 1\n')
+	def ajoutEquipe(self, nomSite,nomsTournees):
+		site = nomSite
+		#rep = raw_input('ajouter une equipe -> taper 1\n')
 		equipes = []
-		while rep == '1':
-			rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+		x=0
+		while x<len(nomsTournees):
+			#rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+			y=0
 			tournees = []
-			while rep_2 == '1':
-				tournee = raw_input('tournee = ')
+			while y<len(nomsTournees[x]):
+				tournee = nomsTournees[x][y]
 				tournees.append(tournee)
-				rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
-			l_sites[site]['liste_equipe'].append(tournees)
-			rep = raw_input('ajouter une equipe -> taper 1')
-		if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
-			self.modifierNbTournee(l_sites)
+				y=y+1
+				#rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+			x=x+1
+			self.l_sites[site]['liste_equipe'].append(tournees)
+			#rep = raw_input('ajouter une equipe -> taper 1')
+		#if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
+			#self.modifierNbTournee(l_sites)
+			self.MAJListeSites(self.l_sites)
 
 
 	def ajoutTournee(self, l_sites):
