@@ -16,8 +16,13 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-colors=['coral', 'lightpink', 'salmon', 'burlywood', 'indianred', 'tomato', 'lightsage', 'sandybrown', 'khaki', 'thistle', 'tan', 'darksalmon', 'lightcoral', 'lightblue', 'lightsalmon', 'rosybrown', 'lightgrey'  ] # revoir pour les camemberts, pas assez visibles
+colors2=['coral', 'lightpink', 'salmon', 'burlywood', 'indianred', 'tomato', 'lightsage', 'sandybrown', 'khaki', 'thistle', 'tan', 'darksalmon', 'lightcoral', 'lightblue', 'lightsalmon', 'rosybrown', 'lightgrey'  ] # revoir pour les camemberts, pas assez visibles
 
+colors3 = ['bluesapphire', 'lightseagreen','turquoisegreen', 'mindaro','folly','warmblack', 'caribbeangreen', 'tealdeer','arcticlime','bigdiporuby','bluejeans',
+'lapislazuli','sandstorm','darkliver','red']
+
+colors = ['blue','aqua','cornflowerblue','skyblue','darkgreen','green','chartreuse','palegreen','brown','crimson','red','tomato','orangered','orange','yellow',
+'khaki','purple','violet','pink']
 
 class Model :
 	def __init__(self) :
@@ -109,7 +114,10 @@ class Model :
 			tournee_site_mois = tournee_site['tournee_site_mois']
 			tournee_site_trimestre = tournee_site['tournee_site_trimestre']
 
-
+			equipe_site = self.equipeSitesSemaines(date_min_max['date_min'], date_min_max['date_max'], tournee_site_date)
+			tournee_site_semaine = tournee_site['tournee_site_semaine']
+			tournee_site_mois = tournee_site['tournee_site_mois']
+			tournee_site_trimestre = tournee_site['tournee_site_trimestre']
 
 		#choix de la semaine
 			print("LIS CE QU'IL Y A ICI JUSTE EN BAS DE CE COMMENTAIRE")
@@ -123,6 +131,8 @@ class Model :
 			self.showMotifSiteWeekGraph(motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre)
 			self.showTopMotifSiteGraph(motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre)
 			self.showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, tournee_site_trimestre, selection_site, num_semaine_mois_trimestre)
+			self.showNbReclaTourneeSiteWeekGraph(tournee_site_semaine, selection_site, date_min_max['date_min'], date_min_max['date_max'], nb_semaine)
+			#self.showEquipeSiteWeekGraph(equipe_site_semaine, equipe_site_mois, equipe_site_trimestre, selection_site, num_semaine_mois_trimestre) # a finir
 
 
 	# suppression des graphes dans le dossier
@@ -328,10 +338,7 @@ class Model :
 		for site in selection_site:
 			nb_recla_semaine_site[site] = {}
 			nombre_reclamation = Counter(nb_recla[site])
-			print 'Counter'
-			print nombre_reclamation
 			for semaine in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1):
-				print semaine
 				nb_recla_semaine['semaine '+str(semaine)] = nb_recla_semaine['semaine '+str(semaine)] + nombre_reclamation[semaine]
 				if nombre_reclamation[semaine]:
 					nb_recla_semaine_site[site]['semaine '+str(semaine)] = nombre_reclamation[semaine]
@@ -383,6 +390,58 @@ class Model :
 				tournee_site_trimestre[str(trimestre)][rows+str(trimestre)].append(row[0])
 		return {'tournee_site_semaine': tournee_site_semaine, 'tournee_site_mois': tournee_site_mois, 'tournee_site_trimestre': tournee_site_trimestre}
 
+	def equipeSitesSemaines(self, date_min, date_max, tournee_site_date):
+		equipe_site_semaine = {}
+		equipe_site_mois = {}
+		equipe_site_trimestre = {}
+		for i in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1):
+			equipe_lieu = {}
+			for site in tournee_site_date:
+				equipe_lieu[site+str(i)] = []
+				#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+			equipe_site_semaine[str(i)] = equipe_lieu
+		print 'equipe_site_semaine'
+		print equipe_site_semaine
+
+		for i in range(date_min.month, date_max.month+1):
+			equipe_lieu = {}
+			for site in tournee_site_date:
+				equipe_lieu[site+str(i)] = []
+		#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+			equipe_site_mois[str(i)]= equipe_lieu
+		print 'equipe_site_mois'
+		print equipe_site_mois
+
+		for i in range(1, 4+1):
+			equipe_lieu = {}
+			for site in tournee_site_date:
+				equipe_lieu[site+str(i)] = []
+		#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+			equipe_site_trimestre[str(i)] = equipe_lieu
+		print 'equipe_site_trimestre'
+		print equipe_site_trimestre
+
+		for rows in tournee_site_date :
+			for row in tournee_site_date[rows]:
+				diff_date = row[1] - date_min
+				semaine = row[1].isocalendar()[1]
+				mois = row[1].month
+				trimestre = int(ceil(mois/3.))
+				equipe_site_semaine[str(semaine)][rows+str(semaine)] = {}
+				equipe_site_mois[str(mois)][rows+str(mois)] = {}
+				equipe_site_trimestre[str(trimestre)][rows+str(trimestre)] = {}
+				for i in range(0, len(self.l_sites[rows]['liste_equipe'])):
+					if row[0] in self.l_sites[rows]['liste_equipe'][i]:
+						equipe_site_semaine[str(semaine)][rows+str(semaine)]['Equipe '+str(i+1)].append(row[0])
+						equipe_site_mois[str(mois)][rows+str(mois)]['Equipe '+str(i+1)].append(row[0])
+						equipe_site_trimestre[str(trimestre)][rows+str(trimestre)]['Equipe '+str(i+1)].append(row[0])
+		print 'equipe_site_semaine'
+		print equipe_site_semaine
+		print 'equipe_site_mois'
+		print equipe_site_mois
+		print 'equipe_site_trimestre'
+		print equipe_site_trimestre
+		return {'equipe_site_semaine': equipe_site_semaine, 'equipe_site_mois': equipe_site_mois, 'equipe_site_trimestre': equipe_site_trimestre}
 
 	def motifSitesSemaines(self, date_min, date_max, motif_site_date):
 		motif_site_semaine = {}
@@ -451,16 +510,15 @@ class Model :
 		# Calcul du nombre de reclamation par motifs
 		# Construction du camembert
 		motifs = []
+		plt.figure(figsize=(12,10))
 		if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 			if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
 				for i in range(int(num_semaine_mois_trimestre.values()[0][0]), int(num_semaine_mois_trimestre.values()[0][1])+1):
-					print i
 					for site in motif_site_semaine[str(i)]:
 						print site
 						for motif in motif_site_semaine[str(i)][site]:
 							motifs.append(motif)
 				nb_motifs = Counter(motifs)
-				print nb_motifs
 				name = nb_motifs.keys()
 				data = nb_motifs.values()
 				plt.title('Nombre de réclamations par motifs pour l\'ensemble des sites\n pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+num_semaine_mois_trimestre.values()[0][1], fontsize=16)
@@ -494,11 +552,11 @@ class Model :
 			plt.title('Nombre de réclamations par motifs \n pour '+site+' pour l\'ensemble des sites pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
 
 		explode= np.zeros(len(nb_motifs))
-		plt.figure(figsize=(12,10))
+		
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		#plt.axis('equal')
 
-		plt.legend(name,bbox_to_anchor=(1.13,0.30),prop={'size':9})
+		plt.legend(name,prop={'size':11},bbox_to_anchor=(1.14,0.16), ncol=2)
 		plt.savefig('Graphiques/1-' + 'nb_recla_motifs.png', dpi=120)
 		plt.close()
 		print("On est à la fin de showmotifgraph juste après le close")
@@ -511,7 +569,7 @@ class Model :
 		nb_recla_semaine=sorted(nb_recla_semaine.items(),key=lambda t : t[0])
 
 		# Construction du graphe
-
+		fig = plt.figure(figsize=(12,10))
 		labels = []
 		values = []
 		for element in nb_recla_semaine:
@@ -522,8 +580,9 @@ class Model :
 		plt.bar(indexes, values, width, color=colors)
 		plt.xticks(indexes + width * 0.5, labels)
 		#plt.axis('equal')
-
-		plt.title('nombre de réclamations par semaine',fontsize=20)
+		plt.xlabel('Semaines du fichier')
+		plt.ylabel('Nombre de réclamations')
+		plt.title('Nombre de réclamations par semaine',fontsize=16)
 		plt.savefig('Graphiques/' + '2-nb_recla_semaine.png', fontsize='20', dpi=120)
 		#plt.show()
 		plt.close()
@@ -556,14 +615,16 @@ class Model :
 			i = i + 1
 
 
-		# Construction du camembert
+		# Construction du graphe
 		ax.legend(labels, prop={'size':12})
 		xTickMarks = ['Semaine '+str(i) for i in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1)]
 		ax.set_xticks(ind)
 		ax.set_ylim(0,60)
 		xtickNames = ax.set_xticklabels(xTickMarks)
 		plt.setp(xtickNames, rotation=20, fontsize=12)
-		plt.title('nombre de réclamations par site pour chaque semaine',fontsize=20)
+		plt.title('Nombre de réclamations par site pour chaque semaine',fontsize=16)
+		plt.xlabel('Semaines du fichier')
+		plt.ylabel('Nombre de réclamations')
 		plt.savefig('Graphiques/' + '3-nb_recla_semaine_site.png', fontsize='20', dpi=120)
 		#plt.show()
 		plt.close()
@@ -572,6 +633,7 @@ class Model :
 		# Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
 	def showMotifSiteWeekGraph(self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		for site in selection_site:
+			plt.figure(figsize=(12,10))
 			#semaines
 			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
@@ -608,9 +670,8 @@ class Model :
 			# Construction du camembert
 
 			explode = np.zeros(len(data))
-			plt.figure(figsize=(12,10))
-			plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%',		 shadow=False, colors=colors)
-			plt.legend(name,bbox_to_anchor=(1.13,0.30),prop={'size':10})
+			plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
+			plt.legend(name,bbox_to_anchor=(1.13,0.10),prop={'size':11}, ncol=2)
 			plt.savefig('Graphiques/4-motif-'+site+'-semaine.png')
 			plt.close()
 
@@ -618,6 +679,8 @@ class Model :
 	def showTourneeSiteWeekGraph(self,tournee_site_semaine, tournee_site_mois, tournee_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		print 'SHOW TOURNEE SITE WEEK'
 		for site in selection_site:
+			fig = plt.figure(figsize=(15,12))
+			ax = fig.add_subplot(111)
 			#semaines
 			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
@@ -652,19 +715,57 @@ class Model :
 						plt.title('Nombre de réclamations par tournee \n pour '+site+' pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
 
 
-				# Construction du graphe
+			# Construction du graphe
 			labels = name
 			values = data
-
 			indexes = np.arange(len(labels))
 			width = 1
-
+			plt.xlabel('Nom des tournées')
+			plt.ylabel('Nombre de réclamations')
+			ax.set_ylim(0,max(values)+0.4*max(values))
 			plt.bar(indexes, values, width, color=colors)
-			plt.xticks(indexes + width * 0.5, labels)
-			 #plt.axis('equal')
+			plt.xticks(indexes+width*0.5, labels, rotation=45)
 			plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png')
 			plt.close()
+			
+			
+	def showNbReclaTourneeSiteWeekGraph(self,tournee_site_semaine, selection_site, date_min, date_max, nb_semaine):
+		print 'SHOW NB RECLA PAR TOURNEE SITE WEEK'
+		plt.figure(figsize=(12,10))
+		#ax = fig.add_subplot(111)
+		ind = np.arange(nb_semaine)
+		width = 0.10
+		labels = []
+		i = 0
+		max_value = -1.0
+		
+		for site in selection_site:
+			values = []
+			x = []
+			sticks = []
+			labels.append(site)
+			for semaine in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1):
+				x.append(int(semaine))
+				sticks.append('Semaine '+str(semaine))
+				res =  float(len(tournee_site_semaine[str(semaine)][site+str(semaine)]))/float(self.l_sites[site]['nombre_tournee'])
+				values.append(round(res,2))
+				if max(values) > max_value:
+					max_value = max(values)
+			plt.plot(x, values, color=colors[i], linestyle='-')
+			i = i + 1
 
+
+		# Construction du camembert
+		plt.legend(labels, prop={'size':12})
+		#ax.set_ylim(0,max_value+0.4*max_value)
+		plt.axis([date_min.isocalendar()[1], date_max.isocalendar()[1], 0, max_value+0.4*max_value])
+		plt.xticks(x, sticks, rotation = 20)
+		#plt.xlabel('Numéro de la semaine')
+		plt.xlabel('Semaines')
+		plt.ylabel('Nombre de réclamations/Nombre de tournées')
+		plt.title('Ratio du nombre de réclamation pour une \n tournée pour chaque semaine', fontsize=16)
+		plt.savefig('Graphiques/6-nbReclaTournee-'+site+'-semaine.png', dpi=120)
+		plt.close()
 
 
 	""" Calcul du nombre de réclamations par site et affichage des graphes pour chaque site dans un png -> on garde ??? pour toutes les semaines du fichier, pas interessant
@@ -683,13 +784,72 @@ class Model :
 			 #plt.axis('equal')
 			plt.title('Nombre de réclamations par motifs pour '+site)
 			plt.legend(name,bbox_to_anchor=(1.13,0.20), prop={'size':9})
-			plt.savefig('Graphiques/3-'+site+'.png', fontsize='20', dpi=120)
+			plt.savefig('Graphiques/3-'+site+'.png', fontsize='20', dpi=170)
 			plt.close()
 """
+
+#a finir
+
+	def showEquipeSiteWeekGraph(self, equipe_site_semaine, equipe_site_mois, equipe_site_trimestre, selection_site, num_semaine_mois_trimestre):
+		print 'SHOW TOURNEE SITE WEEK'
+
+		for site in selection_site:
+			fig = plt.figure(figsize=(12,10))
+			ax = fig.add_subplot(111)
+			#semaines
+			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
+				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
+					semaines = {}
+					semaines[site] = []
+					for i in range(int(num_semaine_mois_trimestre.values()[0][0]), int(num_semaine_mois_trimestre.values()[0][1])+1):
+						print i
+						for equipe in equipe_site_semaine[str(i)][site+str(i)]:
+							semaines[site].append(equipe)
+					count = Counter(semaines[site])
+					name = count.keys()
+					data = count.values()
+					plt.title('Nombre de réclamations par equipe \n pour '+site+' pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+ num_semaine_mois_trimestre.values()[0][1], fontsize=16)
+				elif equipe_site_semaine[int(num_semaine_mois_trimestre['semaine'])][site+num_semaine_mois_trimestre['semaine']]:
+						count = Counter(equipe_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']])
+						name = count.keys()
+						data = count.values()
+						plt.title('Nombre de réclamations par équipe \n pour '+site+' pour la semaine '+num_semaine_mois_trimestre['semaine'], fontsize=16)
+			#mois
+			elif num_semaine_mois_trimestre.keys()[0] == 'mois':
+				if equipe_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+					count = Counter(equipe_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']])
+					name = count.keys()
+					data = count.values()
+					plt.title('Nombre de réclamations par équipe \n pour '+site+' pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
+			#trimesre
+			elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
+					if equipe_site_mois[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+						count = Counter(equipe_site_mois[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']])
+						name = count.keys()
+						data = count.values()
+						plt.title('Nombre de réclamations par équipe \n pour '+site+' pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
+
+
+				# Construction du graphe
+			labels = name
+			values = data
+
+			indexes = np.arange(len(labels))
+			width = 1.5
+			ax.set_ylim(0,max(values)+0.1*max(values))
+			plt.bar(indexes, values, width, color=colors)
+			#plt.legend(labels, bbox_to_anchor=(1.13, 1), prop={'size':12})
+			plt.xticks(indexes + width, labels, rotation=45)
+			plt.xlabel('Equipe')
+			plt.ylabel('Nombre de réclamations')
+			plt.savefig('Graphiques/7-tournee-'+site+'-semaine.png')
+			plt.close()
 
 	def showTopMotifSiteGraph(self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		print 'SHOW TOP MOTIFS'
 		for site in selection_site:
+			fig = plt.figure(figsize=(12,10))
+			ax = fig.add_subplot(111)
 			labels = []
 			values = []
 			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
@@ -732,8 +892,12 @@ class Model :
 
 			indexes = np.arange(len(labels))
 			width = 1
-			plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':9})
-			plt.savefig('Graphiques/6-top_motifs-'+site+'-semaine.png', dpi=120)
+			ax.set_ylim(0,max(values)+0.4*max(values))
+			plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':12})
+			plt.xticks(indexes + width, '')
+			plt.xlabel('Motifs de réclamations')
+			plt.ylabel('Nombre de réclamations')
+			plt.savefig('Graphiques/8-top_motifs-'+site+'-semaine.png', dpi=120)
 			#plt.show()
 			plt.close()
 
