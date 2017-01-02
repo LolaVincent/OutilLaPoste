@@ -10,6 +10,9 @@ from vue5 import *
 from vue6 import *
 from vue7 import *
 from vue8 import *
+from vue9 import *
+from vue10 import *
+from vue11 import *
 
 class Controller():
     def __init__(self):
@@ -122,6 +125,72 @@ class Controller():
         self.fenetreConfig1ModifySite=FenetreModifySite(listeSites)
         self.fenetreConfig1ModifySite.bouton.bind("<Button-1>",self.confirmAddTeamStep2)
 
+    def confirmAddTourneeStep1(self):
+        listeSites=self.vue.listeSites
+        self.fenetreConfigAddTournee=FenetreAddTournee(listeSites)
+        self.fenetreConfigAddTournee.bouton.bind("<Button-1>",self.confirmAddTourneeStep2)
+
+    def confirmAddTourneeStep2(self,event):
+        print("Voici le nom du site entré")
+        print(self.fenetreConfigAddTournee.listeSites.get())
+        print("Voici le numéro de l'équipe à supprimer")
+        print(self.fenetreConfigAddTournee.sbNumeroTeam.get())
+        print(str(self.fenetreConfigAddTournee.listeSites.get()))
+        nomSite=str(self.fenetreConfigAddTournee.listeSites.get())
+        numeroEquipe=self.fenetreConfigAddTournee.sbNumeroTeam.get()
+        nomTournee=str(self.fenetreConfigAddTournee.inputBox.get())
+        self.model.ajoutTournee(nomSite,numeroEquipe,nomTournee)
+
+        self.fenetreConfigAddTournee.master.destroy()
+        self.vue.callback(4)
+        self.confirmModifyTourneesStep1()
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
+
+    def confirmDeleteTourneeStep1(self):
+        listeSites=self.vue.listeSites
+        self.fenetreConfigDeleteTournee=FenetreEraseTournee(listeSites)
+        self.fenetreConfigDeleteTournee.bouton.bind("<Button-1>",self.confirmDeleteTourneeStep2)
+
+    def confirmDeleteTourneeStep2(self,event):
+        print("Voici le nom du site entré")
+        print(self.fenetreConfigDeleteTournee.listeSites.get())
+        print("Voici le numéro de l'équipe à supprimer")
+        print(self.fenetreConfigDeleteTournee.sbNumeroTeam.get())
+        print(str(self.fenetreConfigDeleteTournee.listeSites.get()))
+        nomSite=str(self.fenetreConfigDeleteTournee.listeSites.get())
+        numeroEquipe=self.fenetreConfigDeleteTournee.sbNumeroTeam.get()
+        nomTournee=str(self.fenetreConfigDeleteTournee.inputBox.get())
+        self.model.supprimerTournee(nomSite,numeroEquipe,nomTournee)
+        self.fenetreConfigDeleteTournee.master.destroy()
+        self.vue.callback(4)
+        self.confirmModifyTourneesStep1()
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
+
+
+    def confirmModifyTourneesStep1(self):
+        listeSites=self.vue.listeSites
+        self.fenetreConfigModifyTournees=FenetreModifyTournees(listeSites)
+        self.fenetreConfigModifyTournees.bouton.bind("<Button-1>",self.confirmModifyTourneesStep2)
+
+    def confirmModifyTourneesStep2(self,event):
+        print("Voici le nom du site entré")
+        print(self.fenetreConfigModifyTournees.listeSites.get())
+        print("Voici le numéro de l'équipe à supprimer")
+        print(self.fenetreConfigModifyTournees.sbNumberTournee.get())
+        print(str(self.fenetreConfigModifyTournees.listeSites.get()))
+        nomSite=str(self.fenetreConfigModifyTournees.listeSites.get())
+        nombreTournees=self.fenetreConfigModifyTournees.sbNumberTournee.get()
+        self.model.modifierNbTournee(nomSite,nombreTournees)
+        self.fenetreConfigModifyTournees.master.destroy()
+        self.vue.callback(4)
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
+
     def confirmSuppressTeamStep1(self):
         listeSites=self.vue.listeSites
         self.fenetreConfigSuppressTeam=FenetreEraseTeam(listeSites)
@@ -134,8 +203,10 @@ class Controller():
         print(self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
         print(str(self.fenetreConfigSuppressTeam.listeSites.get()))
         self.model.supprimerEquipe(str(self.fenetreConfigSuppressTeam.listeSites.get()),self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
-        self.vue.callback(4)
         self.fenetreConfigSuppressTeam.master.destroy()
+        self.vue.callback(4)
+
+        self.confirmModifyTourneesStep1()
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
@@ -188,9 +259,12 @@ class Controller():
         self.model.ajoutEquipe(nomSite,nomsToutesTournees)
         self.fenetreConfig3ModifySite.master.destroy()
         self.vue.callback(4)
+        self.confirmModifyTourneesStep1()
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
+
+
 
 
 

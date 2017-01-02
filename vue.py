@@ -33,9 +33,9 @@ class FenetrePrincipale :
         self.menubar.add_cascade(label="Equipes", menu=self.menu3)
 
         self.menu4 = Menu(self.menubar, tearoff=0)
-        self.menu4.add_command(label="Ajouter une tournée")
-        self.menu4.add_command(label="Supprimer une tournée")
-        self.menu4.add_command(label="Modifier le nombre de tournées")
+        self.menu4.add_command(label="Ajouter une tournée", command=self.controller.confirmAddTourneeStep1)
+        self.menu4.add_command(label="Supprimer une tournée", command=self.controller.confirmDeleteTourneeStep1)
+        self.menu4.add_command(label="Modifier le nombre de tournées", command=self.controller.confirmModifyTourneesStep1)
         self.menubar.add_cascade(label="Tournées", menu=self.menu4)
 
 

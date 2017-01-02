@@ -144,10 +144,11 @@ class Model :
 				print("haha")
 				os.remove(path+'/'+x)
 
-	def modifierNbTournee(self):
-		site = raw_input("nom du site pour lequel vous voulez modifier le nombre de tournée")
-		nombre = raw_input("nombre de tournée")
+	def modifierNbTournee(self, site, nombre):
+		#site = raw_input("nom du site pour lequel vous voulez modifier le nombre de tournée")
+		#nombre = raw_input("nombre de tournée")
 		self.l_sites[site.upper()]['nombre_tournee'] = int(nombre)
+		self.MAJListeSites(self.l_sites)
 
 	# ajout d'un site dans le fichier et dans la liste courante
 	def ajoutSite(self, nomNouveauFichier,nombreTournee,nomsTournees):
@@ -197,6 +198,7 @@ class Model :
 			tournees = []
 			while y<len(nomsTournees[x]):
 				tournee = nomsTournees[x][y]
+				tournee=tournee.upper()
 				tournees.append(tournee)
 				y=y+1
 				#rep_2 = raw_input('ajouter tournee dans lequipe -> taper 1\n')
@@ -208,17 +210,19 @@ class Model :
 			self.MAJListeSites(self.l_sites)
 
 
-	def ajoutTournee(self, l_sites):
-		site = raw_input('nom du site auquel vous voulez ajouter une tournee')
-		numEquipe = raw_input('Numero de lequipe:\n')
-		rep = raw_input('ajouter tournee dans lequipe -> taper 1\n')
-		while rep == '1':
-			tournee = raw_input('tournee = ')
-			l_sites[site]['liste_equipe'][int(numEquipe)-1].append(tournee)
-			rep = raw_input('ajouter tournee dans lequipe -> taper 1\n')
-		if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
-			self.modifierNbTournee(l_sites)
-		print l_sites
+	def ajoutTournee(self,site, numEquipe, tournee):
+	#	site = raw_input('nom du site auquel vous voulez ajouter une tournee')
+	#	numEquipe = raw_input('Numero de lequipe:\n')
+	#	rep = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+	#	while rep == '1':
+	#	tournee = raw_input('tournee = ')
+		tournee=tournee.upper()
+		self.l_sites[site]['liste_equipe'][int(numEquipe)-1].append(tournee)
+		#rep = raw_input('ajouter tournee dans lequipe -> taper 1\n')
+		#if raw_input('Voulez-vous modifier le nombre de tournée? taper 1\n')=='1':
+		#self.modifierNbTournee(l_sites)
+		self.MAJListeSites(self.l_sites)
+		print self.l_sites
 
 	# suppression d'un site dans le fichier et dans la liste courante
 	def supprimerSite(self,nomFichierSupprime):
@@ -237,13 +241,15 @@ class Model :
 		self.MAJListeSites(self.l_sites)
 
 
-	def supprimerTournee(self,nomFichierSupprime,l_sites):
+	def supprimerTournee(self,site,numEquipe,nomTournee):
 		print 'SUPPRESSION TOURNEE'
-		site = nomFichierSupprime
+		#site = nomFichierSupprime
 		site = site.upper()
-		numEquipe = raw_input('Numero de lequipe:\n')
-		nomTournee = raw_input('Nom de la tournée:\n')
-		l_sites[site]['liste_equipe'][int(numEquipe)-1].remove(nomTournee)
+		nomTournee=nomTournee.upper()
+		#numEquipe = raw_input('Numero de lequipe:\n')
+		#nomTournee = raw_input('Nom de la tournée:\n')
+		self.l_sites[site]['liste_equipe'][int(numEquipe)-1].remove(nomTournee)
+		self.MAJListeSites(self.l_sites)
 
 	def MAJListeSites(self, l_sites):
 		print("On est dans MAJListeSites")
