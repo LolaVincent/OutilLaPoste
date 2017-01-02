@@ -228,19 +228,14 @@ class Model :
 		self.l_sites.pop(site, None)
 		self.MAJListeSites(self.l_sites)
 
-	def supprimerEquipe(self,nomFichierSupprime,l_sites):
+	def supprimerEquipe(self,nomFichierSupprime, numEquipe):
 		print 'SUPPRESSION EQUIPE'
 		site = nomFichierSupprime
 		site = site.upper()
-		numEquipe = raw_input('Numero de lequipe:\n')
-		l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
+		#numEquipe = raw_input('Numero de lequipe:\n')
+		self.l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
+		self.MAJListeSites(self.l_sites)
 
-	def supprimerEquipe(self,nomFichierSupprime,l_sites):
-		print 'SUPPRESSION EQUIPE'
-		site = nomFichierSupprime
-		site = site.upper()
-		numEquipe = raw_input('Numero de lequipe:\n')
-		l_sites[site]['liste_equipe'].pop(int(numEquipe)-1)
 
 	def supprimerTournee(self,nomFichierSupprime,l_sites):
 		print 'SUPPRESSION TOURNEE'
@@ -552,7 +547,7 @@ class Model :
 			plt.title('Nombre de réclamations par motifs \n pour '+site+' pour l\'ensemble des sites pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
 
 		explode= np.zeros(len(nb_motifs))
-		
+
 		plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 		#plt.axis('equal')
 
@@ -727,8 +722,8 @@ class Model :
 			plt.xticks(indexes+width*0.5, labels, rotation=45)
 			plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png')
 			plt.close()
-			
-			
+
+
 	def showNbReclaTourneeSiteWeekGraph(self,tournee_site_semaine, selection_site, date_min, date_max, nb_semaine):
 		print 'SHOW NB RECLA PAR TOURNEE SITE WEEK'
 		plt.figure(figsize=(12,10))
@@ -738,7 +733,7 @@ class Model :
 		labels = []
 		i = 0
 		max_value = -1.0
-		
+
 		for site in selection_site:
 			values = []
 			x = []

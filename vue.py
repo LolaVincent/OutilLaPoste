@@ -13,7 +13,7 @@ class FenetrePrincipale :
         self.fenetre = Tk()
         self.controller=controller
         #self.fenetre.configure(bg="white")
-        self.fenetre.minsize(900,600)
+        self.fenetre.minsize(600,400)
         self.fenetre.wm_title("Outil La Poste")
         self.menubar = Menu(self.fenetre)
 
@@ -29,12 +29,13 @@ class FenetrePrincipale :
         self.menu3 = Menu(self.menubar, tearoff=0)
         self.menu3.add_command(label="Ajouter une équipe",command= self.controller.confirmAddTeamStep1)
 
-        self.menu3.add_command(label="Supprimer une équipe")
+        self.menu3.add_command(label="Supprimer une équipe", command=self.controller.confirmSuppressTeamStep1)
         self.menubar.add_cascade(label="Equipes", menu=self.menu3)
 
         self.menu4 = Menu(self.menubar, tearoff=0)
         self.menu4.add_command(label="Ajouter une tournée")
         self.menu4.add_command(label="Supprimer une tournée")
+        self.menu4.add_command(label="Modifier le nombre de tournées")
         self.menubar.add_cascade(label="Tournées", menu=self.menu4)
 
 
@@ -124,3 +125,5 @@ class FenetrePrincipale :
                 showinfo('Message de confirmation', 'Rien ne sera effectué')
         if numeroAction==3:
                 showinfo('Message de confirmation', 'Les fichiers ont bien été enregistrés dans un PDF')
+        if numeroAction==4:
+            showinfo('Message de confirmation', "L'opération a été réalisée avec succès !")

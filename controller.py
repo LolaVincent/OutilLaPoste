@@ -9,6 +9,7 @@ from vue4 import *
 from vue5 import *
 from vue6 import *
 from vue7 import *
+from vue8 import *
 
 class Controller():
     def __init__(self):
@@ -49,6 +50,7 @@ class Controller():
         print(str(self.fenetreNouveauSite.inputBox.get()))
         self.model.supprimerSite(str(self.fenetreNouveauSite.inputBox.get()))
         self.fenetreNouveauSite.master.destroy()
+        self.vue.callback(4)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
@@ -100,6 +102,7 @@ class Controller():
         print(nomsToutesTournees)
         self.model.ajoutSite(nomSite,nombreTotalTournees,nomsToutesTournees)
         self.fenetreConfig3NouveauSite.master.destroy()
+        self.vue.callback(4)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
@@ -118,6 +121,24 @@ class Controller():
         listeSites=self.vue.listeSites
         self.fenetreConfig1ModifySite=FenetreModifySite(listeSites)
         self.fenetreConfig1ModifySite.bouton.bind("<Button-1>",self.confirmAddTeamStep2)
+
+    def confirmSuppressTeamStep1(self):
+        listeSites=self.vue.listeSites
+        self.fenetreConfigSuppressTeam=FenetreEraseTeam(listeSites)
+        self.fenetreConfigSuppressTeam.bouton.bind("<Button-1>",self.confirmSuppressTeamStep2)
+
+    def confirmSuppressTeamStep2(self,event):
+        print("Voici le nom du site entré")
+        print(self.fenetreConfigSuppressTeam.listeSites.get())
+        print("Voici le numéro de l'équipe à supprimer")
+        print(self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
+        print(str(self.fenetreConfigSuppressTeam.listeSites.get()))
+        self.model.supprimerEquipe(str(self.fenetreConfigSuppressTeam.listeSites.get()),self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
+        self.vue.callback(4)
+        self.fenetreConfigSuppressTeam.master.destroy()
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
 
     def confirmAddTeamStep2(self,event):
         print("Voici le nom du site entré")
@@ -166,6 +187,7 @@ class Controller():
         print(nomsToutesTournees)
         self.model.ajoutEquipe(nomSite,nomsToutesTournees)
         self.fenetreConfig3ModifySite.master.destroy()
+        self.vue.callback(4)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
