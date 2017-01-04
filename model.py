@@ -11,12 +11,20 @@ import numpy as np
 from datetime import datetime
 from math import *
 
+
+#sudo pip install ReportLab
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, inch, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+
+
 # Problème d'encodage
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-colors2=['coral', 'lightpink', 'salmon', 'burlywood', 'indianred', 'tomato', 'lightsage', 'sandybrown', 'khaki', 'thistle', 'tan', 'darksalmon', 'lightcoral', 'lightblue', 'lightsalmon', 'rosybrown', 'lightgrey'  ] # revoir pour les camemberts, pas assez visibles
+colors2=['coral', 'lightpink', 'salmon', 'burlywood', 'indianred', 'tomato', 'lightsage', 'sandybrown', 'khaki', 'thistle', 'tan', 'darksalmon', 'lightcoral', 'lightblue', 'lightsalmon', 'rosybrown', 'lightgrey'	] # revoir pour les camemberts, pas assez visibles
 
 colors3 = ['bluesapphire', 'lightseagreen','turquoisegreen', 'mindaro','folly','warmblack', 'caribbeangreen', 'tealdeer','arcticlime','bigdiporuby','bluejeans',
 'lapislazuli','sandstorm','darkliver','red']
@@ -33,7 +41,7 @@ class Model :
 
 	""" fonction de lecture du CSV """
 
-	def  readDirectory(self) :
+	def	readDirectory(self) :
 		listeFichiers=list()
 		for element in os.listdir("FichiersCSV/"):
 			listeFichiers.append(element)
@@ -53,7 +61,7 @@ class Model :
 		return liste_sites
 
 	def readCSV(self,nomFichier,listeSitesCoches,choixPeriode,valeurPeriode) :
-	#nomFichier=raw_input("Veuillez entrer le nom du fichier  que vous voulez analysez (suivi de l'extension ) :")
+	#nomFichier=raw_input("Veuillez entrer le nom du fichier	que vous voulez analysez (suivi de l'extension ) :")
 		self.listeSitesCoches=listeSitesCoches
 
 		with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
@@ -63,6 +71,7 @@ class Model :
 			sites = {}
 			nb_recla = {}
 			tournee_site_date={}
+			liste_recla={}
 			motif_site_date = {}
 			#liste_sites = []
 			selection_site = []
@@ -84,11 +93,11 @@ class Model :
 		#	self.supprimerTournee(nomFichierSupprime,l_sites)
 			#self.supprimerTournee('compiegne',l_sites)
 			self.MAJListeSites(self.l_sites)
-			self.selectionSites(sites, nb_recla, motif_site_date, tournee_site_date, selection_site)
+			self.selectionSites(sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, selection_site)
 
 			# détermination des dates min et max et du nombre de semaines
 			#lecture du csv : lecture des motifs, separation par site
-			date_min_max = self.parcoursBDD(bdd, sites, nb_recla, motif_site_date, tournee_site_date, motif)
+			date_min_max = self.parcoursBDD(bdd, sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, motif)
 			mois_min = date_min_max['date_min'].month
 	#		csvfile.seek(0)
 			nb = self.calculNbSemaine(date_min_max['date_min'], date_min_max['date_max'])
@@ -109,15 +118,20 @@ class Model :
 			motif_site_trimestre = motif_site['motif_site_trimestre']
 
 
-			tournee_site = self.tourneeSitesSemaines(date_min_max['date_min'], date_min_max['date_max'],  tournee_site_date)
+			tournee_site = self.tourneeSitesSemaines(date_min_max['date_min'], date_min_max['date_max'],	tournee_site_date)
 			tournee_site_semaine = tournee_site['tournee_site_semaine']
 			tournee_site_mois = tournee_site['tournee_site_mois']
 			tournee_site_trimestre = tournee_site['tournee_site_trimestre']
 
 			equipe_site = self.equipeSitesSemaines(date_min_max['date_min'], date_min_max['date_max'], tournee_site_date)
-			tournee_site_semaine = tournee_site['tournee_site_semaine']
-			tournee_site_mois = tournee_site['tournee_site_mois']
-			tournee_site_trimestre = tournee_site['tournee_site_trimestre']
+			equipe_site_semaine = equipe_site['equipe_site_semaine']
+			equipe_site_mois = equipe_site['equipe_site_mois']
+			equipe_site_trimestre = equipe_site['equipe_site_trimestre']
+
+			liste_recla_site = self.listeReclaSitesSemaines(date_min_max['date_min'], date_min_max['date_max'], liste_recla)
+			liste_recla_site_semaine = liste_recla_site['liste_recla_site_semaine']
+			liste_recla_site_mois = liste_recla_site['liste_recla_site_mois']
+			liste_recla_site_trimestre = liste_recla_site['liste_recla_site_trimestre']
 
 		#choix de la semaine
 			print("LIS CE QU'IL Y A ICI JUSTE EN BAS DE CE COMMENTAIRE")
@@ -132,9 +146,10 @@ class Model :
 			self.showTopMotifSiteGraph(motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre)
 			self.showTourneeSiteWeekGraph(tournee_site_semaine, tournee_site_mois, tournee_site_trimestre, selection_site, num_semaine_mois_trimestre)
 			self.showNbReclaTourneeSiteWeekGraph(tournee_site_semaine, selection_site, date_min_max['date_min'], date_min_max['date_max'], nb_semaine)
-			#self.showEquipeSiteWeekGraph(equipe_site_semaine, equipe_site_mois, equipe_site_trimestre, selection_site, num_semaine_mois_trimestre) # a finir
-
-
+			self.showEquipeSiteWeekGraph(equipe_site_semaine, equipe_site_mois, equipe_site_trimestre, selection_site, num_semaine_mois_trimestre)
+			
+			self.tableau_recla(liste_recla_site_semaine, liste_recla_site_mois, liste_recla_site_trimestre, selection_site, num_semaine_mois_trimestre)
+			
 	# suppression des graphes dans le dossier
 	def removeFiles(self):
 		path = "Graphiques"
@@ -143,6 +158,8 @@ class Model :
 			if not x in '0pageDeGarde.png' :
 				print("haha")
 				os.remove(path+'/'+x)
+				path = "Graphiques"
+
 
 	def modifierNbTournee(self, site, nombre):
 		#site = raw_input("nom du site pour lequel vous voulez modifier le nombre de tournée")
@@ -271,7 +288,7 @@ class Model :
 		os.renames("liste_sites_temp", "liste_sites")
 
 
-	def selectionSites(self, sites, nb_recla, motif_site_date, tournee_site_date, selection_site):
+	def selectionSites(self, sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, selection_site):
 		#ajout du site s'il est demandé
 		print(self.listeSitesCoches)
 		for site in self.listeSitesCoches:
@@ -281,6 +298,8 @@ class Model :
 			tournee_site_date[site] = []
 			motif_site_date[site]=[]
 			nb_recla[site] = []
+			liste_recla[site] = []
+			
 			selection_site.append(site)
 		print(selection_site)
 		print(motif_site_date)
@@ -288,7 +307,7 @@ class Model :
 		print(sites)
 
 	""" Parcours du fichier BDD et récupération des infos """
-	def parcoursBDD(self,bdd, sites, nb_recla, motif_site_date, tournee_site_date, motif):
+	def parcoursBDD(self,bdd, sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, motif):
 
 		date_max = datetime.strptime("01/01/1900 01:01", '%d/%m/%Y %H:%M')
 		date_min = datetime.strptime("12/12/2020 00:00", '%d/%m/%Y %H:%M')
@@ -313,8 +332,8 @@ class Model :
 							motif_site_date[site].append([row[13], date])
 						if '' != row[47]:
 							tournee_site_date[site].append([row[47], date])
-		print 'nb_recla'
-		print nb_recla
+						liste_recla[site].append([row[1]+' '+row[51]+' '+row[52], row[4]+' '+row[5]+' '+row[8]+' '+row[9], date, row[47], row[13], row[28]])
+		print liste_recla
 		return {'date_min':date_min, 'date_max':date_max}
 
 	""" Détermination de la semaine du motif et par site """
@@ -432,10 +451,14 @@ class Model :
 				equipe_site_mois[str(mois)][rows+str(mois)] = {}
 				equipe_site_trimestre[str(trimestre)][rows+str(trimestre)] = {}
 				for i in range(0, len(self.l_sites[rows]['liste_equipe'])):
-					if row[0] in self.l_sites[rows]['liste_equipe'][i]:
-						equipe_site_semaine[str(semaine)][rows+str(semaine)]['Equipe '+str(i+1)].append(row[0])
-						equipe_site_mois[str(mois)][rows+str(mois)]['Equipe '+str(i+1)].append(row[0])
-						equipe_site_trimestre[str(trimestre)][rows+str(trimestre)]['Equipe '+str(i+1)].append(row[0])
+					equipe_site_semaine[str(semaine)][rows+str(semaine)]['Equipe '+str(i+1)] = []
+					equipe_site_mois[str(mois)][rows+str(mois)]['Equipe '+str(i+1)] = []
+					equipe_site_trimestre[str(trimestre)][rows+str(trimestre)]['Equipe '+str(i+1)] = []
+					r = re.compile(".*"+str(row[0]))
+					if filter(r.match, self.l_sites[rows]['liste_equipe'][i]):
+						equipe_site_semaine[str(semaine)][rows+str(semaine)]['Equipe '+str(i+1)].append(filter(r.match, self.l_sites[rows]['liste_equipe'][i])[0])
+						equipe_site_mois[str(mois)][rows+str(mois)]['Equipe '+str(i+1)].append(filter(r.match, self.l_sites[rows]['liste_equipe'][i])[0])
+						equipe_site_trimestre[str(trimestre)][rows+str(trimestre)]['Equipe '+str(i+1)].append(filter(r.match, self.l_sites[rows]['liste_equipe'][i])[0])
 		print 'equipe_site_semaine'
 		print equipe_site_semaine
 		print 'equipe_site_mois'
@@ -454,8 +477,7 @@ class Model :
 				motif_lieu[site+str(i)] = []
 				#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 			motif_site_semaine[str(i)] = motif_lieu
-		print 'motif_site_semaine'
-		print motif_site_semaine
+
 
 		for i in range(date_min.month, date_max.month+1):
 			motif_lieu = {}
@@ -464,8 +486,7 @@ class Model :
 				motif_lieu[site+str(i)] = []
 		#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 			motif_site_mois[str(i)]= motif_lieu
-		print 'motif_site_mois'
-		print motif_site_mois
+
 
 		for i in range(1, 4+1):
 			motif_lieu = {}
@@ -473,8 +494,7 @@ class Model :
 				motif_lieu[site+str(i)] = []
 		#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
 			motif_site_trimestre[str(i)] = motif_lieu
-		print 'trimestre'
-		print motif_site_trimestre
+
 
 		for rows in motif_site_date :
 			for row in motif_site_date[rows]:
@@ -485,7 +505,64 @@ class Model :
 				trimestre = int(ceil(mois/3.))
 				motif_site_mois[str(mois)][rows+str(mois)].append(row[0])
 				motif_site_trimestre[str(trimestre)][rows+str(trimestre)].append(row[0])
+
+		print 'motif_site_semaine'
+		print motif_site_semaine
+		print 'motif_site_mois'
+		print motif_site_mois
+		print 'motif_site_trimestre'
+		print motif_site_trimestre
+
 		return {'motif_site_semaine': motif_site_semaine, 'motif_site_mois': motif_site_mois, 'motif_site_trimestre': motif_site_trimestre}
+	
+	def listeReclaSitesSemaines(self, date_min, date_max, liste_recla):
+		liste_recla_site_semaine = {}
+		liste_recla_site_mois = {}
+		liste_recla_site_trimestre = {}
+		for i in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1):
+			recla_lieu = {}
+			for site in liste_recla:
+				recla_lieu[site+str(i)] = []
+				#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+			liste_recla_site_semaine[str(i)] = recla_lieu
+
+
+		for i in range(date_min.month, date_max.month+1):
+			recla_lieu = {}
+			for site in liste_recla:
+				recla_lieu[site+str(i)] = []
+		#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+			liste_recla_site_mois[str(i)]= recla_lieu
+
+
+		for i in range(1, 4+1):
+			recla_lieu = {}
+			for site in liste_recla:
+				recla_lieu[site+str(i)] = []
+		#besoin de différencier le site pour chaque semaine sinon agit sur tous car même clé
+			liste_recla_site_trimestre[str(i)] = recla_lieu
+
+
+		for rows in liste_recla :
+			for row in liste_recla[rows]:
+				diff_date = row[2] - date_min
+				semaine = row[2].isocalendar()[1]
+				mois = row[2].month
+				row[2] = row[2].strftime('%d/%m/%Y %H:%M')
+				liste_recla_site_semaine[str(semaine)][rows+str(semaine)].append(row)
+				
+				trimestre = int(ceil(mois/3.))
+				liste_recla_site_mois[str(mois)][rows+str(mois)].append(row)
+				liste_recla_site_trimestre[str(trimestre)][rows+str(trimestre)].append(row)
+
+		print 'liste_recla_site_semaine'
+		print liste_recla_site_semaine
+		print 'liste_recla_site_mois'
+		print liste_recla_site_mois
+		print 'liste_recla_site_trimestre'
+		print liste_recla_site_trimestre
+
+		return {'liste_recla_site_semaine': liste_recla_site_semaine, 'liste_recla_site_mois' : liste_recla_site_mois, 'liste_recla_site_trimestre' : liste_recla_site_trimestre}
 
 
 
@@ -515,38 +592,39 @@ class Model :
 		if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 			if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
 				for i in range(int(num_semaine_mois_trimestre.values()[0][0]), int(num_semaine_mois_trimestre.values()[0][1])+1):
-					for site in motif_site_semaine[str(i)]:
-						print site
-						for motif in motif_site_semaine[str(i)][site]:
+					for site in selection_site:
+						for motif in motif_site_semaine[str(i)][site+str(i)]:
 							motifs.append(motif)
 				nb_motifs = Counter(motifs)
 				name = nb_motifs.keys()
 				data = nb_motifs.values()
 				plt.title('Nombre de réclamations par motifs pour l\'ensemble des sites\n pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+num_semaine_mois_trimestre.values()[0][1], fontsize=16)
 
-			elif motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
-				for site in motif_site_semaine[num_semaine_mois_trimestre['semaine']]:
-					for motif in motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
-						motifs.append(motif)
+			else:
+				for site in selection_site:
+					if motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+						for motif in motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+							motifs.append(motif)
 				nb_motifs = Counter(motifs)
 				name = nb_motifs.keys()
 				data = nb_motifs.values()
 				plt.title('Nombre de réclamations par motifs l\'ensemble des sites \n pour la semaine '+num_semaine_mois_trimestre['semaine'], fontsize=16)
 		#mois
 		elif num_semaine_mois_trimestre.keys()[0] == 'mois':
-			if motif_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
-				for site in motif_site_semaine[num_semaine_mois_trimestre['mois']]:
-					for motif in motif_site_semaine[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+			for site in selection_site:
+				if motif_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+					for motif in motif_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
 						motifs.append(motif)
-				nb_motifs = Counter(motifs)
-				name = nb_motifs.keys()
-				data = nb_motifs.values()
-				plt.title('Nombre de réclamations par motifs \n pour l\'ensemble des sites pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
+			nb_motifs = Counter(motifs)
+			name = nb_motifs.keys()
+			data = nb_motifs.values()
+			plt.title('Nombre de réclamations par motifs \n pour l\'ensemble des sites pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
 		#trimestre
 		elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
-			for site in motif_site_semaine[num_semaine_mois_trimestre['trimestre']]:
-				for motif in motif_site_semaine[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
-					   motifs.append(motif)
+			for site in motif_site_trimestre[num_semaine_mois_trimestre['trimestre']]:
+				if motif_site_trimestre[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+					for motif in motif_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+						motifs.append(motif)
 			nb_motifs = Counter(motifs)
 			name = nb_motifs.keys()
 			data = nb_motifs.values()
@@ -649,7 +727,7 @@ class Model :
 					plt.title('Nombre de réclamations par motifs \n pour '+site+' pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+num_semaine_mois_trimestre.values()[0][1], fontsize=16)
 
 				elif motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
-						count = Counter(motif_site_semaine[int(num_semaine_mois_trimestre['semaine'])][site+num_semaine_mois_trimestre['semaine']])
+						count = Counter(motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']])
 						name = count.keys()
 						data = count.values()
 						plt.title('Nombre de réclamations par motifs \n pour '+site+' pour la semaine '+num_semaine_mois_trimestre['semaine'], fontsize=16)
@@ -673,7 +751,7 @@ class Model :
 			explode = np.zeros(len(data))
 			plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
 			plt.legend(name,bbox_to_anchor=(1.13,0.10),prop={'size':11}, ncol=2)
-			plt.savefig('Graphiques/4-motif-'+site+'-semaine.png')
+			plt.savefig('Graphiques/4-motif-'+site+'-'+num_semaine_mois_trimestre.keys()[0]+'.png')
 			plt.close()
 
 
@@ -695,7 +773,7 @@ class Model :
 					name = count.keys()
 					data = count.values()
 					plt.title('Nombre de réclamations par tournee \n pour '+site+' pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+ num_semaine_mois_trimestre.values()[0][1], fontsize=16)
-				elif tournee_site_semaine[int(num_semaine_mois_trimestre['semaine'])][site+num_semaine_mois_trimestre['semaine']]:
+				elif tournee_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
 						count = Counter(tournee_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']])
 						name = count.keys()
 						data = count.values()
@@ -709,7 +787,7 @@ class Model :
 					plt.title('Nombre de réclamations par tournee \n pour '+site+' pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
 			#trimesre
 			elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
-					if tournee_site_mois[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+					if tournee_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
 						count = Counter(tournee_site_mois[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']])
 						name = count.keys()
 						data = count.values()
@@ -726,7 +804,7 @@ class Model :
 			ax.set_ylim(0,max(values)+0.4*max(values))
 			plt.bar(indexes, values, width, color=colors)
 			plt.xticks(indexes+width*0.5, labels, rotation=45)
-			plt.savefig('Graphiques/5-tournee-'+site+'-semaine.png')
+			plt.savefig('Graphiques/5-tournee-'+site+'-'+num_semaine_mois_trimestre.keys()[0]+'.png')
 			plt.close()
 
 
@@ -748,7 +826,7 @@ class Model :
 			for semaine in range(date_min.isocalendar()[1], date_max.isocalendar()[1]+1):
 				x.append(int(semaine))
 				sticks.append('Semaine '+str(semaine))
-				res =  float(len(tournee_site_semaine[str(semaine)][site+str(semaine)]))/float(self.l_sites[site]['nombre_tournee'])
+				res =	float(len(tournee_site_semaine[str(semaine)][site+str(semaine)]))/float(self.l_sites[site]['nombre_tournee'])
 				values.append(round(res,2))
 				if max(values) > max_value:
 					max_value = max(values)
@@ -765,7 +843,7 @@ class Model :
 		plt.xlabel('Semaines')
 		plt.ylabel('Nombre de réclamations/Nombre de tournées')
 		plt.title('Ratio du nombre de réclamation pour une \n tournée pour chaque semaine', fontsize=16)
-		plt.savefig('Graphiques/6-nbReclaTournee-'+site+'-semaine.png', dpi=120)
+		plt.savefig('Graphiques/6-nbReclaTournee-'+site+'.png', dpi=120)
 		plt.close()
 
 
@@ -792,59 +870,66 @@ class Model :
 #a finir
 
 	def showEquipeSiteWeekGraph(self, equipe_site_semaine, equipe_site_mois, equipe_site_trimestre, selection_site, num_semaine_mois_trimestre):
-		print 'SHOW TOURNEE SITE WEEK'
+		print 'SHOW EQUIPE SITE WEEK'
 
 		for site in selection_site:
+			print site
 			fig = plt.figure(figsize=(12,10))
 			ax = fig.add_subplot(111)
-			#semaines
+			labels = []
+			values = []
 			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
 					semaines = {}
 					semaines[site] = []
+					l = []
 					for i in range(int(num_semaine_mois_trimestre.values()[0][0]), int(num_semaine_mois_trimestre.values()[0][1])+1):
-						print i
+						
 						for equipe in equipe_site_semaine[str(i)][site+str(i)]:
-							semaines[site].append(equipe)
-					count = Counter(semaines[site])
-					name = count.keys()
-					data = count.values()
+							for n in range(0,len(equipe_site_semaine[str(i)][site+str(i)][equipe])):
+								l.append(equipe)
+					count = Counter(l) 
+					labels = count.keys()
+					values = count.values()
+
 					plt.title('Nombre de réclamations par equipe \n pour '+site+' pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+ num_semaine_mois_trimestre.values()[0][1], fontsize=16)
-				elif equipe_site_semaine[int(num_semaine_mois_trimestre['semaine'])][site+num_semaine_mois_trimestre['semaine']]:
-						count = Counter(equipe_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']])
-						name = count.keys()
-						data = count.values()
+				elif equipe_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+						for equipe in equipe_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+							labels.append(equipe)
+							values.append(len(equipe_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']][equipe]))
 						plt.title('Nombre de réclamations par équipe \n pour '+site+' pour la semaine '+num_semaine_mois_trimestre['semaine'], fontsize=16)
 			#mois
 			elif num_semaine_mois_trimestre.keys()[0] == 'mois':
 				if equipe_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
-					count = Counter(equipe_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']])
-					name = count.keys()
-					data = count.values()
+					for equipe in equipe_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+						labels.append(equipe)
+						values.append(len(equipe_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']][equipe]))
+					print labels
+					print values
 					plt.title('Nombre de réclamations par équipe \n pour '+site+' pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
 			#trimesre
 			elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
-					if equipe_site_mois[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
-						count = Counter(equipe_site_mois[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']])
-						name = count.keys()
-						data = count.values()
-						plt.title('Nombre de réclamations par équipe \n pour '+site+' pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
+				if equipe_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+					for equipe in equipe_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+						labels.append(equipe)
+						values.append(len(equipe_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']][equipe]))
+					print labels
+					print values
+					plt.title('Nombre de réclamations par équipe \n pour '+site+' pour le trimestre '+num_semaine_mois_trimestre['trimestre'], fontsize=16)
 
 
 				# Construction du graphe
-			labels = name
-			values = data
-
-			indexes = np.arange(len(labels))
-			width = 1.5
-			ax.set_ylim(0,max(values)+0.1*max(values))
-			plt.bar(indexes, values, width, color=colors)
-			#plt.legend(labels, bbox_to_anchor=(1.13, 1), prop={'size':12})
-			plt.xticks(indexes + width, labels, rotation=45)
-			plt.xlabel('Equipe')
-			plt.ylabel('Nombre de réclamations')
-			plt.savefig('Graphiques/7-tournee-'+site+'-semaine.png')
-			plt.close()
+			if values: 
+				indexes = np.arange(len(labels))
+				width = 1
+				ax.set_ylim(0,max(values)+0.4*max(values))
+				plt.bar(indexes, values, width*0.5, color=colors)
+				#plt.legend(labels, bbox_to_anchor=(1.13, 1), prop={'size':12})
+				plt.xticks(indexes, labels, rotation=20)
+				plt.xlabel('Equipe')
+				plt.ylabel('Nombre de réclamations')
+				plt.savefig('Graphiques/7-equipe-'+site+'-'+num_semaine_mois_trimestre.keys()[0]+'.png')
+				plt.close()
 
 	def showTopMotifSiteGraph(self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		print 'SHOW TOP MOTIFS'
@@ -867,23 +952,23 @@ class Model :
 						labels.append(element[0])
 						values.append(element[1])
 					plt.title('Top des réclamations pour '+site+'\n pour les semaines '+num_semaine_mois_trimestre.values()[0][0]+' à '+ num_semaine_mois_trimestre.values()[0][1], fontsize=16)
-				elif motif_site_semaine[int(num_semaine_mois_trimestre['semaine'])][site+num_semaine_mois_trimestre['semaine']]:
-						count = Counter(motif_site_semaine[int(num_semaine_mois_trimestre['semaine'])][site+num_semaine_mois_trimestre['semaine']]).most_common(5)
+				elif motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]:
+						count = Counter(motif_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]).most_common(5)
 
 						for element in count:
 							labels.append(element[0])
 							values.append(element[1])
 						plt.title('Top des réclamations pour '+site+'\n pour la semaine '+num_semaine_mois_trimestre['semaine'], fontsize=16)
 			elif num_semaine_mois_trimestre.keys()[0] == 'mois':
-				if motif_site_mois[int(num_semaine_mois_trimestre['mois'])][site+num_semaine_mois_trimestre['mois']]:
-						count = Counter(motif_site_mois[int(num_semaine_mois_trimestre['mois'])][site+num_semaine_mois_trimestre['mois']]).most_common(5)
+				if motif_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]:
+						count = Counter(motif_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]).most_common(5)
 						for element in count:
 							labels.append(element[0])
 							values.append(element[1])
 						plt.title('Top des réclamations pour '+site+'\n pour le mois '+num_semaine_mois_trimestre['mois'], fontsize=16)
 			elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
-				if motif_site_mois[int(num_semaine_mois_trimestre['trimestre'])][site+num_semaine_mois_trimestre['trimestre']]:
-						count = Counter(motif_site_mois[int(num_semaine_mois_trimestre['trimestre'])][site+num_semaine_mois_trimestre['trimestre']]).most_common(5)
+				if motif_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]:
+						count = Counter(motif_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]).most_common(5)
 						for element in count:
 							labels.append(element[0])
 							values.append(element[1])
@@ -898,12 +983,60 @@ class Model :
 			plt.xticks(indexes + width, '')
 			plt.xlabel('Motifs de réclamations')
 			plt.ylabel('Nombre de réclamations')
-			plt.savefig('Graphiques/8-top_motifs-'+site+'-semaine.png', dpi=120)
+			plt.savefig('Graphiques/8-top_motifs-'+site+'-'+num_semaine_mois_trimestre.keys()[0]+'.png', dpi=120)
 			#plt.show()
 			plt.close()
 
 
-
+	def tableau_recla(self, liste_recla_site_semaine, liste_recla_site_mois, liste_recla_site_trimestre, selection_site, num_semaine_mois_trimestre):
+		#suppression des anciennes listes
+		path = "ListeReclamations"
+		files=os.listdir(path)
+		for x in files:
+			if not x in '0pageDeGarde.png' :
+				print("haha")
+				os.remove(path+'/'+x)
+				
+				
+		for site in selection_site:
+			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
+				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
+					data = []
+					for i in range(int(num_semaine_mois_trimestre.values()[0][0]), int(num_semaine_mois_trimestre.values()[0][1])+1):
+						print i
+						data = data + liste_recla_site_semaine[str(i)][site+str(i)]
+				else:
+						data = liste_recla_site_semaine[num_semaine_mois_trimestre['semaine']][site+num_semaine_mois_trimestre['semaine']]
+			elif num_semaine_mois_trimestre.keys()[0] == 'mois':
+					data = liste_recla_site_mois[num_semaine_mois_trimestre['mois']][site+num_semaine_mois_trimestre['mois']]
+			elif num_semaine_mois_trimestre.keys()[0] == 'trimestre':
+				data = liste_rela_site_trimestre[num_semaine_mois_trimestre['trimestre']][site+num_semaine_mois_trimestre['trimestre']]
+			print data
+						
+			doc = SimpleDocTemplate("ListeReclamations/liste_reclamations_"+site+".pdf", pagesize=A4, rightMargin=30,leftMargin=30, topMargin=30,bottomMargin=18)
+			doc.pagesize = landscape(A4)
+			elements = []
+			style = TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
+											 ('TEXTCOLOR',(1,1),(-2,-2),"red"),
+											 ('VALIGN',(0,0),(0,-1),'TOP'),
+											 ('TEXTCOLOR',(0,0),(0,-1),"blue"),
+											 ('ALIGN',(0,-1),(-1,-1),'CENTER'),
+											 ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
+											 ('TEXTCOLOR',(0,-1),(-1,-1),"green"),
+											 ('INNERGRID', (0,0), (-1,-1), 0.25, "black"),
+											 ('BOX', (0,0), (-1,-1), 0.25, "black"),
+											 ])
+			s = getSampleStyleSheet()
+			s = s["BodyText"]
+			s.wordWrap = 'CJK'
+			data2 = [[Paragraph(cell, s) for cell in row] for row in data]
+			data2 = [['Nom et Prénom', 'Adresse', 'Date', 'Numéro de la tournée', 'Motif', 'Commentaires']] + data2
+			t=Table(data2)
+			t.setStyle(style)
+ 
+			#Send the data and build the file
+			elements.append(t)
+			doc.build(elements)
 
 	""" Fonction pour mettre tous les fichiers dun répertoire donné dans une liste """
 	def listeImagesDossier(self,nomDossier) :

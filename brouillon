@@ -1,0 +1,17 @@
+		fichier = open("liste_sites", "rb")
+		c_write = csv.writer(open("liste_sites_temp", "a"))
+		c_read = csv.reader(fichier, delimiter=';')
+
+		#ecriture de la nouvelle liste dans un fichier temporaire puis suppression
+		for row in c_read:
+			if site not in row[0]:
+				c_write.writerow(row)
+		os.remove("liste_sites")
+		os.renames("liste_sites_temp", "liste_sites")
+		
+		
+		
+		COMPIEGNE': {'liste_equipe': [['TL0010', 'TL0011', 'TL0012', 'TL0013', 'TL0014', 'TL0015', 'TL0016', 'TL0017', 'TL0018', 'TL0019', 'TL0001', 'TL0002'], ['TL0020', 'TL0021', 'TL0022', 'TL0023', 'TL0024', 'TL0025', 'TL0026', 'TL0027', 'TL0028', 'TL0003', 'TL0004'], ['TL0030', 'TM0031', 'TM0032', 'TL0033', 'TL0034', 'TL0035', 'TM0036', 'TM0037', 'TM0038', 'TL0039', 'TL0005', 'TL0006'], ['TL0040', 'TM0041', 'TM0042', 'TM0043', 'TM0044', 'TM0045', 'TL0046', 'TM0047', 'TM0048', 'TM0049', 'TL0007', 'TL0008']], 'nombre_tournee': '47'}
+		
+		
+		'COMPIEGNE': {'liste_equipe': [['TL0010', 'TL0011', 'TL0012', 'TL0013', 'TL0014', 'TL0015', 'TL0016', 'TL0017', 'TL0018', 'TL0019', 'TL0001', 'TL0002'], ['TL0020', 'TL0021', 'TL0022', 'TL0023', 'TL0024', 'TL0025', 'TL0026', 'TL0027', 'TL0028', 'TL0003', 'TL0004'], ['TL0030', 'TM0031', 'TM0032', 'TL0033', 'TL0034', 'TL0035', 'TM0036', 'TM0037', 'TM0038', 'TL0039', 'TL0005', 'TL0006'], ['TL0040', 'TM0041', 'TM0042', 'TM0043', 'TM0044', 'TM0045', 'TL0046', 'TM0047', 'TM0048', 'TM0049', 'TL0007', 'TL0008']], 'nombre_tournee': '47'}
