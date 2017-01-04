@@ -21,6 +21,7 @@ class Controller():
         self.vue.bouton0.bind("<Button-1>",self.openChoices)
         self.vue.bouton1.bind("<Button-1>",self.newSite)
         self.vue.bouton2.bind("<Button-1>",self.deleteSite)
+        self.vue.bouton3.bind("<Button-1>",self.openChoicesRecla)
 
 
 
@@ -273,6 +274,13 @@ class Controller():
         self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self)
         self.fenetreChoix.bouton.bind("<Button-1>",self.beginExtraction)
 
+    def openChoicesRecla(self,event):
+        periodeChoisie=str(self.vue.listePeriods.get())
+        self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self)
+        self.fenetreChoix.bouton.bind("<Button-1>",self.beginReclamation)
+
+
+
     def beginExtraction(self,event):
         print("HAHAHAHAHHAHA")
         i=0
@@ -290,8 +298,10 @@ class Controller():
             periodeEntree=a+'-'+b
         if str(self.vue.listePeriods.get())=="Mois":
             periodeEntree=str(self.fenetreChoix.sbMois.get())
+        if str(self.vue.listePeriods.get())=="Trimestre":
+            periodeEntree=str(self.fenetreChoix.sbMois.get())
 
-        self.model.readCSV(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
+        self.model.readCSV1(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
         self.fenetreChoix.master.destroy()
         self.vue.callback(1)
         self.vue.callback(2)
@@ -299,6 +309,32 @@ class Controller():
         self.newController=Controller()
         self.newController.run()
 
+    def beginReclamation(self,event):
+
+        i=0
+        listSites=list()
+        #Là on est capable de voir la liste des boutons cochés  et de récupérer les sites sélectionnés
+        while (i<len(self.vue.listVariableCheckButton)):
+            if self.vue.listVariableCheckButton[i].get()==True:
+                print(self.vue.listTextCheckButton[i])
+                listSites.append(self.vue.listTextCheckButton[i])
+            i=i+1
+        print("VOICI LE CONTENU DE LA COMBO BOX : " + self.vue.listePeriods.get())
+        if str(self.vue.listePeriods.get())=="Semaines":
+            a=str(self.fenetreChoix.sbSemaines1.get())
+            b=str(self.fenetreChoix.sbSemaines2.get())
+            periodeEntree=a+'-'+b
+        if str(self.vue.listePeriods.get())=="Mois":
+            periodeEntree=str(self.fenetreChoix.sbMois.get())
+        if str(self.vue.listePeriods.get())=="Trimestre":
+            periodeEntree=str(self.fenetreChoix.sbMois.get())
+
+        self.model.readCSV2(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
+        self.fenetreChoix.master.destroy()
+        self.vue.callback(1)
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
 
     def savePDF(self):
         self.model.fromPNGToPDF("Résumé",self.model.listeImagesDossier("Graphiques/"), "Graphiques")

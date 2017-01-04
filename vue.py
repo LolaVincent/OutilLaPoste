@@ -78,8 +78,7 @@ class FenetrePrincipale :
     #    self.sp1.grid()
     #    self.sp2.grid()
 
-        self.bouton0=Button(self.fenetre, text="Valider")
-        self.bouton0.grid(row=0, column=2)
+
 
         photo = PhotoImage(file="logo.png")
 
@@ -108,6 +107,11 @@ class FenetrePrincipale :
         self.bouton1.grid(row=i+1)
         self.bouton2=Button(self.l, text="Supprimer site")
         self.bouton2.grid(row=i+2)
+        self.bouton0=Button(self.l, text="Liste des indicateurs")
+        self.bouton0.grid(row=i+3)
+        self.bouton3=Button(self.l, text="Liste des réclamations")
+        self.bouton3.grid(row=i+4)
+
 
 
 
