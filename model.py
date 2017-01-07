@@ -6,7 +6,7 @@ import csv
 from PIL import Image # Faire sudo pip install pillow pour utiliser cette librairie
 from fpdf import FPDF # Faire sudo pip install fpdf pour utiliser cette librairie
 from collections import Counter
-
+import matplotlib.backends.backend_tkagg
 import matplotlib.pyplot as plt # pour les graphes, faire sudo apt-get install python-matplotlib avant
 import numpy as np
 from datetime import datetime
