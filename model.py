@@ -6,6 +6,7 @@ import csv
 from PIL import Image # Faire sudo pip install pillow pour utiliser cette librairie
 from fpdf import FPDF # Faire sudo pip install fpdf pour utiliser cette librairie
 from collections import Counter
+
 import matplotlib.pyplot as plt # pour les graphes, faire sudo apt-get install python-matplotlib avant
 import numpy as np
 from datetime import datetime
@@ -49,7 +50,8 @@ class Model :
 
 	def readSites(self) :
 		liste_sites={}
-		l_sites = csv.reader(open("liste_sites","rb"))
+		stream=open("liste_sites","rb")
+		l_sites = csv.reader(stream)
 		for row in l_sites:
 			liste_sites[row[0]] = {}
 			liste_sites[row[0]]['nombre_tournee'] = row[1]
@@ -58,7 +60,49 @@ class Model :
 			liste_sites[site]['liste_equipe'] = liste_sites[site]['liste_equipe'].split('_')
 			for equipe in range(0,len(liste_sites[site]['liste_equipe'])):
 				liste_sites[site]['liste_equipe'][equipe] = liste_sites[site]['liste_equipe'][equipe].split('-')
+		stream.close()
 		return liste_sites
+
+	def definePeriodsLimits(self, nomFichier, choixPeriode):
+		with open("FichiersCSV/"+nomFichier, 'rb') as csvfile:
+
+			bdd = csv.reader(csvfile, delimiter=';')
+			motif=[]
+			sites = {}
+			nb_recla = {}
+			tournee_site_date={}
+			liste_recla={}
+			motif_site_date = {}
+			#liste_sites = []
+			selection_site = []
+
+
+			#lecture de la liste des sites
+			l_sites = self.readSites()
+			self.l_sites=l_sites
+
+			self.MAJListeSites(self.l_sites)
+			self.selectionSites(sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, selection_site)
+
+			# détermination des dates min et max et du nombre de semaines
+			#lecture du csv : lecture des motifs, separation par site
+			date_min_max = self.parcoursBDD(bdd, sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, motif)
+			periodeMinMax=list()
+			if choixPeriode=='Mois':
+				moisMin = date_min_max['date_min'].month
+				moisMax=date_min_max['date_max'].month
+				periodeMinMax.append(moisMin)
+				periodeMinMax.append(moisMax)
+			if choixPeriode=='Semaines':
+				semaineMin=date_min_max['date_min'].isocalendar()[1]
+				semaineMax=date_min_max['date_max'].isocalendar()[1]
+				periodeMinMax.append(semaineMin)
+				periodeMinMax.append(semaineMax)
+			if choixPeriode=='Trimestre':
+				periodeMinMax.append(1)
+				periodeMinMax.append(4)
+		return periodeMinMax
+
 
 	""" Fonction qui se lance pour la création des graphiques sur les indicateurs"""
 	def readCSV1(self,nomFichier,listeSitesCoches,choixPeriode,valeurPeriode) :
@@ -337,7 +381,8 @@ class Model :
 		print("Voici le contenu de l_sites")
 		print(l_sites)
 		fichier = open("liste_sites", "rb")
-		c_write = csv.writer(open("liste_sites_temp", "wb"))
+		fichier1=open("liste_sites_temp", "wb")
+		c_write = csv.writer(fichier1)
 
 		#ecriture de la nouvelle liste dans un fichier temporaire puis suppression
 		for site in l_sites:
@@ -350,6 +395,8 @@ class Model :
 			c_write.writerow([site,l_sites[site]['nombre_tournee'],equipes[1:]])
 		os.remove("liste_sites")
 		os.renames("liste_sites_temp", "liste_sites")
+		fichier1.close()
+		fichier.close()
 
 
 	def selectionSites(self, sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, selection_site):

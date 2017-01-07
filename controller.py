@@ -236,12 +236,16 @@ class Controller():
 
     def openChoices(self,event):
         periodeChoisie=str(self.vue.listePeriods.get())
-        self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self)
+        periodeMinMax=self.model.definePeriodsLimits(str(self.vue.listeCSV.get()), periodeChoisie)
+        print("VOICI LA DATE MINIMUM ET LA PERIODE MAX")
+        print(periodeMinMax)
+        self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self, periodeMinMax)
         self.fenetreChoix.bouton.bind("<Button-1>",self.beginExtraction)
 
     def openChoicesRecla(self,event):
         periodeChoisie=str(self.vue.listePeriods.get())
-        self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self)
+        periodeMinMax=self.model.definePeriodsLimits(str(self.vue.listeCSV.get()), periodeChoisie)
+        self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self, periodeMinMax)
         self.fenetreChoix.bouton.bind("<Button-1>",self.beginReclamation)
 
 
