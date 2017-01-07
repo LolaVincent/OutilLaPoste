@@ -60,6 +60,7 @@ class Model :
 				liste_sites[site]['liste_equipe'][equipe] = liste_sites[site]['liste_equipe'][equipe].split('-')
 		return liste_sites
 
+	""" Fonction qui se lance pour la création des graphiques sur les indicateurs"""
 	def readCSV1(self,nomFichier,listeSitesCoches,choixPeriode,valeurPeriode) :
 	#nomFichier=raw_input("Veuillez entrer le nom du fichier	que vous voulez analysez (suivi de l'extension ) :")
 		self.listeSitesCoches=listeSitesCoches
@@ -148,9 +149,9 @@ class Model :
 			self.showNbReclaTourneeSiteWeekGraph(tournee_site_semaine, selection_site, date_min_max['date_min'], date_min_max['date_max'], nb_semaine)
 			self.showEquipeSiteWeekGraph(equipe_site_semaine, equipe_site_mois, equipe_site_trimestre, selection_site, num_semaine_mois_trimestre)
 
-			self.tableau_recla(liste_recla_site_semaine, liste_recla_site_mois, liste_recla_site_trimestre, selection_site, num_semaine_mois_trimestre)
+			#self.tableau_recla(liste_recla_site_semaine, liste_recla_site_mois, liste_recla_site_trimestre, selection_site, num_semaine_mois_trimestre)
 
-
+	""" Ici c''est la fonction qui se lance pour le tableau de la liste des réclamations """
 	def readCSV2(self,nomFichier,listeSitesCoches,choixPeriode,valeurPeriode) :
 	#nomFichier=raw_input("Veuillez entrer le nom du fichier	que vous voulez analysez (suivi de l'extension ) :")
 		self.listeSitesCoches=listeSitesCoches
@@ -176,6 +177,9 @@ class Model :
 			# détermination des dates min et max et du nombre de semaines
 			#lecture du csv : lecture des motifs, separation par site
 			date_min_max = self.parcoursBDD(bdd, sites, nb_recla, liste_recla, motif_site_date, tournee_site_date, motif)
+			print("VOICI LES DATES MINI")
+			print (date_min_max)
+			print("VOICI LES DATES MAXI")
 			mois_min = date_min_max['date_min'].month
 	#		csvfile.seek(0)
 			nb = self.calculNbSemaine(date_min_max['date_min'], date_min_max['date_max'])

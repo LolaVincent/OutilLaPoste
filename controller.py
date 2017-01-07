@@ -17,16 +17,19 @@ from vue11 import *
 class Controller():
     def __init__(self):
         self.model=Model()
-        self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
-        self.vue.bouton0.bind("<Button-1>",self.openChoices)
-        self.vue.bouton1.bind("<Button-1>",self.newSite)
-        self.vue.bouton2.bind("<Button-1>",self.deleteSite)
-        self.vue.bouton3.bind("<Button-1>",self.openChoicesRecla)
+        try:
+            self.vue=FenetrePrincipale(self.model.readDirectory(),self.model.readSites(),self)
+            self.vue.bouton0.bind("<Button-1>",self.openChoices)
+            self.vue.bouton1.bind("<Button-1>",self.newSite)
+            self.vue.bouton2.bind("<Button-1>",self.deleteSite)
+            self.vue.bouton3.bind("<Button-1>",self.openChoicesRecla)
+        except Exception:
+            FenetrePrincipale.callback(5)
+
 
 
 
     def run(self):
-        print("HAHA")
         self.vue.fenetre.mainloop()
 
 
@@ -54,7 +57,7 @@ class Controller():
         print(str(self.fenetreNouveauSite.inputBox.get()))
         self.model.supprimerSite(str(self.fenetreNouveauSite.inputBox.get()))
         self.fenetreNouveauSite.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
@@ -106,21 +109,11 @@ class Controller():
         print(nomsToutesTournees)
         self.model.ajoutSite(nomSite,nombreTotalTournees,nomsToutesTournees)
         self.fenetreConfig3NouveauSite.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
 
-
-
-
-
-
-        #self.model.ajoutSite(str(self.fenetreNouveauSite.inputBox.get()))
-        #self.fenetreNouveauSite.master.destroy()
-        #self.vue.fenetre.destroy()
-        #self.newController=Controller()
-        #self.newController.run()
     def confirmAddTeamStep1(self):
         listeSites=self.vue.listeSites
         self.fenetreConfig1ModifySite=FenetreModifySite(listeSites)
@@ -132,9 +125,7 @@ class Controller():
         self.fenetreConfigAddTournee.bouton.bind("<Button-1>",self.confirmAddTourneeStep2)
 
     def confirmAddTourneeStep2(self,event):
-        print("Voici le nom du site entré")
         print(self.fenetreConfigAddTournee.listeSites.get())
-        print("Voici le numéro de l'équipe à supprimer")
         print(self.fenetreConfigAddTournee.sbNumeroTeam.get())
         print(str(self.fenetreConfigAddTournee.listeSites.get()))
         nomSite=str(self.fenetreConfigAddTournee.listeSites.get())
@@ -143,7 +134,7 @@ class Controller():
         self.model.ajoutTournee(nomSite,numeroEquipe,nomTournee)
 
         self.fenetreConfigAddTournee.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
         self.confirmModifyTourneesStep1()
         self.vue.fenetre.destroy()
         self.newController=Controller()
@@ -155,17 +146,12 @@ class Controller():
         self.fenetreConfigDeleteTournee.bouton.bind("<Button-1>",self.confirmDeleteTourneeStep2)
 
     def confirmDeleteTourneeStep2(self,event):
-        print("Voici le nom du site entré")
-        print(self.fenetreConfigDeleteTournee.listeSites.get())
-        print("Voici le numéro de l'équipe à supprimer")
-        print(self.fenetreConfigDeleteTournee.sbNumeroTeam.get())
-        print(str(self.fenetreConfigDeleteTournee.listeSites.get()))
         nomSite=str(self.fenetreConfigDeleteTournee.listeSites.get())
         numeroEquipe=self.fenetreConfigDeleteTournee.sbNumeroTeam.get()
         nomTournee=str(self.fenetreConfigDeleteTournee.inputBox.get())
         self.model.supprimerTournee(nomSite,numeroEquipe,nomTournee)
         self.fenetreConfigDeleteTournee.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
         self.confirmModifyTourneesStep1()
         self.vue.fenetre.destroy()
         self.newController=Controller()
@@ -178,16 +164,11 @@ class Controller():
         self.fenetreConfigModifyTournees.bouton.bind("<Button-1>",self.confirmModifyTourneesStep2)
 
     def confirmModifyTourneesStep2(self,event):
-        print("Voici le nom du site entré")
-        print(self.fenetreConfigModifyTournees.listeSites.get())
-        print("Voici le numéro de l'équipe à supprimer")
-        print(self.fenetreConfigModifyTournees.sbNumberTournee.get())
-        print(str(self.fenetreConfigModifyTournees.listeSites.get()))
         nomSite=str(self.fenetreConfigModifyTournees.listeSites.get())
         nombreTournees=self.fenetreConfigModifyTournees.sbNumberTournee.get()
         self.model.modifierNbTournee(nomSite,nombreTournees)
         self.fenetreConfigModifyTournees.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
@@ -198,14 +179,9 @@ class Controller():
         self.fenetreConfigSuppressTeam.bouton.bind("<Button-1>",self.confirmSuppressTeamStep2)
 
     def confirmSuppressTeamStep2(self,event):
-        print("Voici le nom du site entré")
-        print(self.fenetreConfigSuppressTeam.listeSites.get())
-        print("Voici le numéro de l'équipe à supprimer")
-        print(self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
-        print(str(self.fenetreConfigSuppressTeam.listeSites.get()))
         self.model.supprimerEquipe(str(self.fenetreConfigSuppressTeam.listeSites.get()),self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
         self.fenetreConfigSuppressTeam.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
 
         self.confirmModifyTourneesStep1()
         self.vue.fenetre.destroy()
@@ -213,16 +189,11 @@ class Controller():
         self.newController.run()
 
     def confirmAddTeamStep2(self,event):
-        print("Voici le nom du site entré")
-        print(self.fenetreConfig1ModifySite.listeSites.get())
-        print("Voici le nombre de nouvelles équipes à enregistrer")
-        print(self.fenetreConfig1ModifySite.sbNbEquipe.get())
         self.fenetetreConfig2ModifySite=FenetreModifySite2(self.fenetreConfig1ModifySite.listeSites.get(),self.fenetreConfig1ModifySite.sbNbEquipe.get())
         self.fenetetreConfig2ModifySite.confirmButton.bind("<Button-1>",self.confirmAddTeamStep3)
         self.fenetreConfig1ModifySite.master.destroy()
 
     def confirmAddTeamStep3(self,event):
-        print("ON EST DANS confirmAddTeamStep3 !!!")
         nomSite=self.fenetetreConfig2ModifySite.nomSite
         nombreEquipes=self.fenetetreConfig2ModifySite.nombreEquipes
         valeursSpinbox=list()
@@ -231,11 +202,6 @@ class Controller():
             valeur=int(self.fenetetreConfig2ModifySite.spinboxTournees[i].get())
             valeursSpinbox.append(valeur)
             i=i+1
-        print("Voici la  valeur de la SpinBox :")
-        print(valeursSpinbox)
-        print("Valeur de la spin box terminée")
-        print("Voici également la valeur du nombre d'équipes")
-        print(nombreEquipes)
         self.fenetreConfig3ModifySite=FenetreInputNomsTournees(nomSite,nombreEquipes,0,valeursSpinbox)
 
 
@@ -256,10 +222,9 @@ class Controller():
                 j=j+1
             nomsToutesTournees.append(nomsTournees)
             i=i+1
-        print(nomsToutesTournees)
         self.model.ajoutEquipe(nomSite,nomsToutesTournees)
         self.fenetreConfig3ModifySite.master.destroy()
-        self.vue.callback(4)
+        FenetrePrincipale.callback(4)
         self.confirmModifyTourneesStep1()
         self.vue.fenetre.destroy()
         self.newController=Controller()
@@ -282,7 +247,6 @@ class Controller():
 
 
     def beginExtraction(self,event):
-        print("HAHAHAHAHHAHA")
         i=0
         listSites=list()
         #Là on est capable de voir la liste des boutons cochés  et de récupérer les sites sélectionnés
@@ -291,7 +255,6 @@ class Controller():
                 print(self.vue.listTextCheckButton[i])
                 listSites.append(self.vue.listTextCheckButton[i])
             i=i+1
-        print("VOICI LE CONTENU DE LA COMBO BOX : " + self.vue.listePeriods.get())
         if str(self.vue.listePeriods.get())=="Semaines":
             a=str(self.fenetreChoix.sbSemaines1.get())
             b=str(self.fenetreChoix.sbSemaines2.get())
@@ -303,8 +266,8 @@ class Controller():
 
         self.model.readCSV1(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
         self.fenetreChoix.master.destroy()
-        self.vue.callback(1)
-        self.vue.callback(2)
+        FenetrePrincipale.callback(1)
+        FenetrePrincipale.callback(2)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
@@ -319,7 +282,6 @@ class Controller():
                 print(self.vue.listTextCheckButton[i])
                 listSites.append(self.vue.listTextCheckButton[i])
             i=i+1
-        print("VOICI LE CONTENU DE LA COMBO BOX : " + self.vue.listePeriods.get())
         if str(self.vue.listePeriods.get())=="Semaines":
             a=str(self.fenetreChoix.sbSemaines1.get())
             b=str(self.fenetreChoix.sbSemaines2.get())
@@ -331,11 +293,11 @@ class Controller():
 
         self.model.readCSV2(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
         self.fenetreChoix.master.destroy()
-        self.vue.callback(1)
+        FenetrePrincipale.callback(1)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
 
     def savePDF(self):
         self.model.fromPNGToPDF("Résumé",self.model.listeImagesDossier("Graphiques/"), "Graphiques")
-        self.vue.callback(3)
+        FenetrePrincipale.callback(3)

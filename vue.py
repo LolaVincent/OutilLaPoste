@@ -117,8 +117,8 @@ class FenetrePrincipale :
 
         self.fenetre.config(menu=self.menubar)
 
-
-    def callback(self, numeroAction):
+    @staticmethod
+    def callback(numeroAction):
         if numeroAction==1:
             showinfo('Message de confirmation', 'Le traitement du fichier a bien été effectué !')
         if numeroAction==2:
@@ -131,3 +131,7 @@ class FenetrePrincipale :
                 showinfo('Message de confirmation', 'Les fichiers ont bien été enregistrés dans un PDF')
         if numeroAction==4:
             showinfo('Message de confirmation', "L'opération a été réalisée avec succès !")
+        if numeroAction==5:
+            showerror("Erreur de lancement", "Désolé, l'outil ne peut pas se lancer. Vérifiez bien que le dossier 'FichiersCSV' existe, et qu'il ne contienne que des fichiers encodés en utf-8")
+        if numeroAction==6:
+            showerror("Erreur d'exécution", "Désolé, une erreur est survenue durant l'exécution de la tâche demandée.")
