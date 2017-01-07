@@ -271,7 +271,7 @@ class Controller():
         self.model.readCSV1(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
         self.fenetreChoix.master.destroy()
         FenetrePrincipale.callback(1)
-        FenetrePrincipale.callback(2)
+        self.vue.callbackBis(2)
         self.vue.fenetre.destroy()
         self.newController=Controller()
         self.newController.run()
