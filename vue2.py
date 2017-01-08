@@ -24,8 +24,10 @@ class FenetreInput:
         if choixFait=="Semaines":
             self.labelSemaines=Label(self.master, text="Choisissez un  intervalle de semaine de type a-b (avec a<=b)")
             self.labelSemaines.grid(row=0,column=0)
-            self.sbSemaines1=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
-            self.sbSemaines2=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
+            #self.sbSemaines1=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
+            #self.sbSemaines2=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
+            self.sbSemaines1=Spinbox(self.master)
+            self.sbSemaines2=Spinbox(self.master)
             self.sbSemaines1.grid(row=0,column=1)
             self.sbSemaines2.grid(row=0,column=2)
 
