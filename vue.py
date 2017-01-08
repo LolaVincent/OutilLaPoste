@@ -22,9 +22,9 @@ class FenetrePrincipale :
         self.menu1.add_command(label="Suppression d'un site", command=self.controller.deleteSiteV2)
         self.menubar.add_cascade(label="Sites", menu=self.menu1)
 
-        self.menu2 = Menu(self.menubar, tearoff=0)
-        self.menu2.add_command(label="Date de la dernière utilisation du logiciel")
-        self.menubar.add_cascade(label="Historique", menu=self.menu2)
+        #self.menu2 = Menu(self.menubar, tearoff=0)
+        #self.menu2.add_command(label="Date de la dernière utilisation du logiciel")
+        #self.menubar.add_cascade(label="Historique", menu=self.menu2)
 
         self.menu3 = Menu(self.menubar, tearoff=0)
         self.menu3.add_command(label="Ajouter une équipe",command= self.controller.confirmAddTeamStep1)
@@ -40,9 +40,9 @@ class FenetrePrincipale :
 
 
 
-        self.menu5 = Menu(self.menubar, tearoff=0)
-        self.menu5.add_command(label="A propos")
-        self.menubar.add_cascade(label="Aide", menu=self.menu5)
+        #self.menu5 = Menu(self.menubar, tearoff=0)
+        #self.menu5.add_command(label="A propos")
+        #self.menubar.add_cascade(label="Aide", menu=self.menu5)
 
         # Quel CSV a été sélectionné ?
         self.cSVSelect	= StringVar()

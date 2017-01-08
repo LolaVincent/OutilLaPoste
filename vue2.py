@@ -22,12 +22,17 @@ class FenetreInput:
             print(periodeMinMax[0])
             self.sbMois.grid(row=0,column=1)
         if choixFait=="Semaines":
-            self.labelSemaines=Label(self.master, text="Choisissez un  intervalle de semaine de type a-b (avec a<=b)")
+            self.labelSemaines=Label(self.master, text="Choisissez un  intervalle de semaine de type a-b")
             self.labelSemaines.grid(row=0,column=0)
-            #self.sbSemaines1=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
-            #self.sbSemaines2=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
-            self.sbSemaines1=Spinbox(self.master)
-            self.sbSemaines2=Spinbox(self.master)
+            if int(periodeMinMax[0])> int(periodeMinMax[1]):
+                periodeMinMax=self.calculValeursSpinBox(int(periodeMinMax[0]),int(periodeMinMax[1]))
+                self.sbSemaines1=Spinbox(self.master,values=periodeMinMax)
+                self.sbSemaines2=Spinbox(self.master,values=periodeMinMax)
+            else:
+                self.sbSemaines1=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
+                self.sbSemaines2=Spinbox(self.master, from_=int(periodeMinMax[0]), to_=int(periodeMinMax[1]))
+            #self.sbSemaines1=Spinbox(self.master)
+            #self.sbSemaines2=Spinbox(self.master)
             self.sbSemaines1.grid(row=0,column=1)
             self.sbSemaines2.grid(row=0,column=2)
 
@@ -40,3 +45,15 @@ class FenetreInput:
 
         self.bouton=Button(self.master, text="Valider")
         self.bouton.grid(row=1,column=1)
+
+    def calculValeursSpinBox(self, semaineMin,semaineMax):
+        listeDesSemaines=list()
+        ind=semaineMin
+        while ind<=53:
+            listeDesSemaines.append(ind)
+            ind=ind+1
+        ind=1
+        while ind<=semaineMax:
+            listeDesSemaines.append(ind)
+            ind=ind+1
+        return listeDesSemaines
