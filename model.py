@@ -724,7 +724,7 @@ class Model :
 		# Calcul du nombre de reclamation par motifs
 		# Construction du camembert
 		motifs = []
-		plt.figure(figsize=(12,10))
+		plt.figure(figsize=(15,12))
 		if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 			if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
 				if int(num_semaine_mois_trimestre.values()[0][0]) > int(num_semaine_mois_trimestre.values()[0][1]):
@@ -791,10 +791,10 @@ class Model :
 		print 'SHOW NB RECLA SEMAINE'
 		print nb_recla_semaine
 		nb_recla_semaine=sorted(nb_recla_semaine.items(),key=lambda t : t[0])
-		fig = plt.figure(figsize=(12,10))
+		fig = plt.figure(figsize=(15,12))
 		ax = fig.add_subplot(111)
 		# Construction du graphe
-		fig = plt.figure(figsize=(12,10))
+		fig = plt.figure(figsize=(15,12))
 		labels = []
 		values = []
 		for element in nb_recla_semaine:
@@ -821,7 +821,7 @@ class Model :
 	def showNbReclaSemaineSiteGraph(self, nb_recla_semaine_site, nb_semaine, date_min, date_max, num_semaines):
 		print 'SHOW NB RECLA SEMAINE SITE'
 		print nb_recla_semaine_site
-		fig = plt.figure(figsize=(12,10))
+		fig = plt.figure(figsize=(15,12))
 		ax = fig.add_subplot(111)
 		ind = np.arange(len(num_semaines))
 		width = 0.10
@@ -847,12 +847,12 @@ class Model :
 
 
 		# Construction du graphe
-		ax.legend(labels, prop={'size':12})
+		ax.legend(labels, prop={'size':16})
 		#xTickMarks = ['Semaine '+str(i) for i in num_semaines]
 		#print xTickMarks
 		ax.set_xticks(ind)
 		xtickNames = ax.set_xticklabels(xTickMarks)
-		plt.setp(xtickNames, rotation=20, fontsize=12)
+		plt.setp(xtickNames, rotation=20, fontsize=16)
 		plt.title('Nombre de réclamations par site pour chaque semaine',fontsize=16)
 		plt.xlabel('Semaines du fichier')
 		plt.ylabel('Nombre de réclamations')
@@ -864,7 +864,7 @@ class Model :
 		# Calcul du nombre de réclamations par site pour une semaine et affichage des graphes pour chaque site dans un png
 	def showMotifSiteWeekGraph(self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		for site in selection_site:
-			plt.figure(figsize=(12,10))
+			plt.figure(figsize=(15,12))
 			#semaines
 			if num_semaine_mois_trimestre.keys()[0] == 'semaine':
 				if type(num_semaine_mois_trimestre.values()[0]) == type(list()):
@@ -911,7 +911,7 @@ class Model :
 			if data : 
 				explode = np.zeros(len(data))
 				plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%', shadow=False, colors=colors)
-				plt.legend(name,bbox_to_anchor=(1.13,0.10),prop={'size':11}, ncol=2)
+				plt.legend(name,bbox_to_anchor=(1.13,0.10),prop={'size':13}, ncol=2)
 				plt.savefig('Graphiques/4-motif-'+site+'-'+num_semaine_mois_trimestre.keys()[0]+'.png')
 			plt.close()
 
@@ -982,7 +982,7 @@ class Model :
 	def showNbReclaTourneeSiteWeekGraph(self,tournee_site_semaine, selection_site, date_min, date_max, num_semaines):
 		print 'SHOW NB RECLA PAR TOURNEE SITE WEEK'
 		nb_semaines = len(num_semaines)
-		plt.figure(figsize=(12,10))
+		plt.figure(figsize=(15,12))
 		#ax = fig.add_subplot(111)
 		ind = np.arange(len(num_semaines))
 		width = 0.10
@@ -1008,7 +1008,7 @@ class Model :
 		print sticks
 
 		# Construction du camembert
-		plt.legend(labels, prop={'size':12})
+		plt.legend(labels, prop={'size':16})
 		#ax.set_ylim(0,max_value+0.4*max_value)
 		#plt.axis([0, nb_semaines, 0, max_value+0.4*max_value])
 		plt.xticks(x, sticks, rotation = 20)
@@ -1031,7 +1031,7 @@ class Model :
 
 			# Construction du camembert
 			explode = np.zeros(len(count_sites))
-			plt.figure(figsize=(12,10))
+			plt.figure(figsize=(15,12))
 			plt.pie(data, explode=explode, autopct = lambda x: str(round(x, 1)) + '%',shadow=False, colors=colors)
 			 #plt.axis('equal')
 			plt.title('Nombre de réclamations par motifs pour '+site)
@@ -1047,7 +1047,7 @@ class Model :
 
 		for site in selection_site:
 			print site
-			fig = plt.figure(figsize=(12,10))
+			fig = plt.figure(figsize=(15,12))
 			ax = fig.add_subplot(111)
 			labels = []
 			values = []
@@ -1118,7 +1118,7 @@ class Model :
 	def showTopMotifSiteGraph(self, motif_site_semaine, motif_site_mois, motif_site_trimestre, selection_site, num_semaine_mois_trimestre):
 		print 'SHOW TOP MOTIFS'
 		for site in selection_site:
-			fig = plt.figure(figsize=(12,10))
+			fig = plt.figure(figsize=(15,12))
 			ax = fig.add_subplot(111)
 			labels = []
 			values = []
@@ -1172,7 +1172,7 @@ class Model :
 				indexes = np.arange(len(labels))
 				width = 1
 				ax.set_ylim(0,max(values)+0.4*max(values))
-				plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':12})
+				plt.legend(plt.bar(indexes, values, width, color=colors), labels, bbox_to_anchor=(1.13, 1), prop={'size':16})
 				plt.xticks(indexes + width, '')
 				plt.xlabel('Motifs de réclamations')
 				plt.ylabel('Nombre de réclamations')
@@ -1265,7 +1265,7 @@ class Model :
 		width, height = cover.size
 
 
-		pdf = FPDF(unit = "pt", format = [width, height])
+		pdf = FPDF(unit = "pt", format = [width, height], orientation ='L')
 
 
 		for page in listImages:
