@@ -104,7 +104,6 @@ class Controller():
                 j=j+1
             nomsToutesTournees.append(nomsTournees)
             i=i+1
-        print(nomsToutesTournees)
         try:
             self.model.ajoutSite(nomSite,nombreTotalTournees,nomsToutesTournees)
             self.fenetreConfig3NouveauSite.master.destroy()
@@ -258,8 +257,7 @@ class Controller():
     def openChoices(self,event):
         periodeChoisie=str(self.vue.listePeriods.get())
         periodeMinMax=self.model.definePeriodsLimits(str(self.vue.listeCSV.get()), periodeChoisie)
-        print("VOICI LA DATE MINIMUM ET LA PERIODE MAX")
-        print(periodeMinMax)
+
         self.fenetreChoix=FenetreInput(self.vue,periodeChoisie,self, periodeMinMax)
         self.fenetreChoix.bouton.bind("<Button-1>",self.beginExtraction)
 
@@ -277,7 +275,6 @@ class Controller():
         #Là on est capable de voir la liste des boutons cochés  et de récupérer les sites sélectionnés
         while (i<len(self.vue.listVariableCheckButton)):
             if self.vue.listVariableCheckButton[i].get()==True:
-                print(self.vue.listTextCheckButton[i])
                 listSites.append(self.vue.listTextCheckButton[i])
             i=i+1
         if str(self.vue.listePeriods.get())=="Semaines":
@@ -311,7 +308,6 @@ class Controller():
         #Là on est capable de voir la liste des boutons cochés  et de récupérer les sites sélectionnés
         while (i<len(self.vue.listVariableCheckButton)):
             if self.vue.listVariableCheckButton[i].get()==True:
-                print(self.vue.listTextCheckButton[i])
                 listSites.append(self.vue.listTextCheckButton[i])
             i=i+1
         if str(self.vue.listePeriods.get())=="Semaines":

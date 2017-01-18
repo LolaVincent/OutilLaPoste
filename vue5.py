@@ -27,22 +27,16 @@ class FenetreInputNomsTournees:
 
         i=0
 
-        print(nombreTourneesSurEquipe)
-        print("Le nombre d'équipes est")
-        print(nombreEquipes)
+
         while i<int(nombreEquipes):
-            print("La valeur de i est ")
-            print(i)
+
             nomsChaqueTournee=list()
-            print("la valeur de nombreTourneesSurEquipe[i] est ")
-            print(nombreTourneesSurEquipe[i])
-            
+
+
             partieTournee=LabelFrame(self.partieEquipe,text="Equipe n°"+ str(i+1))
             partieTournee.grid()
             j=0
             while j<nombreTourneesSurEquipe[i]:
-                print("la valeur de j est")
-                print(j)
                 nomTournee=StringVar()
                 inputBoxTournee=Entry(partieTournee,textvariable=nomTournee)
                 inputBoxTournee.grid()

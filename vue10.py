@@ -21,7 +21,7 @@ class FenetreEraseTournee:
         self.listeSites.grid(row=0,column=1)
         self.labelEnonceEquipe=Label(self.master, text="Numéro de l'équipe à laquelle appartient la tournée:")
         self.labelEnonceEquipe.grid(row=1,column=0)
-        self.sbNumeroTeam=Spinbox(self.master, from_=0, to_=15)
+        self.sbNumeroTeam=Spinbox(self.master, from_=1, to_=15)
         self.sbNumeroTeam.grid(row=1,column=1)
 
         self.labelEnonceTournee=Label(self.master, text="Nom de la tournée à supprimer :")

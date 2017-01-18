@@ -18,8 +18,7 @@ class FenetreInput:
 
             self.labelMois=Label(self.master, text="Choisissez un mois entre 1 et 12")
             self.labelMois.grid(row=0,column=0)
-            print(periodeMinMax[0])
-            print(periodeMinMax[0])
+
             self.sbMois.grid(row=0,column=1)
         if choixFait=="Semaines":
             self.labelSemaines=Label(self.master, text="Choisissez un  intervalle de semaine de type a-b")

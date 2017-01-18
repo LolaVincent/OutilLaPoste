@@ -9,7 +9,6 @@ from tkMessageBox import *
 
 class FenetrePrincipale :
     def __init__(self,listeFichiers,listeSites,controller):
-        print('Constructiion dut truc')
         self.fenetre = Tk()
         self.controller=controller
         #self.fenetre.configure(bg="white")
@@ -96,7 +95,7 @@ class FenetrePrincipale :
         for element in listeSites:
             variable_i=BooleanVar()
             bouton = Checkbutton(self.l, text=str(element), variable=variable_i)
-            bouton.grid(row=i,column=0)
+            bouton.grid(row=i,column=0, sticky =W)
             self.listVariableCheckButton.append(variable_i)
             self.listTextCheckButton.append(str(element))
             self.listCheckButton.append(bouton)
@@ -104,13 +103,13 @@ class FenetrePrincipale :
             i=i+1
 
         self.bouton1=Button(self.l, text="Ajouter site")
-        self.bouton1.grid(row=i+1)
+        self.bouton1.grid(row=i+3,sticky ='nesw')
         self.bouton2=Button(self.l, text="Supprimer site")
-        self.bouton2.grid(row=i+2)
+        self.bouton2.grid(row=i+4,sticky ='nesw')
         self.bouton0=Button(self.l, text="Liste des indicateurs")
-        self.bouton0.grid(row=i+3)
+        self.bouton0.grid(row=i+5,sticky ='nesw')
         self.bouton3=Button(self.l, text="Liste des réclamations")
-        self.bouton3.grid(row=i+4)
+        self.bouton3.grid(row=i+6,sticky ='nesw')
 
 
 

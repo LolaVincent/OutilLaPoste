@@ -18,16 +18,10 @@ class FenetreModifySite2:
         self.nombreEquipes=nombreEquipes
 
         ind=0
-        print("AVANT LA BOUCLE DE LA FENETRE")
-        print("VOILA LA VALEUR DE NOMMBREEQUIPES")
-        print(nombreEquipes)
+
         while (ind<int(nombreEquipes)):
             ind=ind+1
-            print("DANS LA BOUCLE")
-            print("VOILA LA VALEUR DE NOMMBREEQUIPES")
-            print(nombreEquipes)
-            print("VOILA LA VALEUR DE l'INDICE")
-            print(ind)
+
             numeroEquipe=Label(self.partieEquipe, text="Equipe n°" + str(ind) + ":")
             numeroEquipe.grid(row=ind,column=0)
             nombreTournees=Spinbox(self.partieEquipe, from_=1, to_=10)
