@@ -319,17 +319,17 @@ class Controller():
         if str(self.vue.listePeriods.get())=="Trimestre":
             periodeEntree=str(self.fenetreChoix.sbMois.get())
 
-        try:
-            self.model.readCSV2(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
-            self.fenetreChoix.master.destroy()
-            FenetrePrincipale.callback(1)
-        except Exception:
-            self.fenetreChoix.master.destroy()
-            FenetrePrincipale.callback(6)
-        finally :
-            self.vue.fenetre.destroy()
-            self.newController=Controller()
-            self.newController.run()
+
+        self.model.readCSV2(str(self.vue.listeCSV.get()),listSites,str(self.vue.listePeriods.get()),periodeEntree)
+        self.fenetreChoix.master.destroy()
+        FenetrePrincipale.callback(1)
+            #except Exception:
+        #self.fenetreChoix.master.destroy()
+        #FenetrePrincipale.callback(6)
+        #finally :
+        self.vue.fenetre.destroy()
+        self.newController=Controller()
+        self.newController.run()
 
     def savePDF(self):
         try:
