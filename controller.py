@@ -137,7 +137,6 @@ class Controller():
             self.model.ajoutTournee(nomSite,numeroEquipe,nomTournee)
             self.fenetreConfigAddTournee.master.destroy()
             FenetrePrincipale.callback(4)
-            self.confirmModifyTourneesStep1()
         except Exception:
             self.fenetreConfigAddTournee.master.destroy()
             FenetrePrincipale.callback(6)
@@ -159,7 +158,6 @@ class Controller():
             self.model.supprimerTournee(nomSite,numeroEquipe,nomTournee)
             self.fenetreConfigDeleteTournee.master.destroy()
             FenetrePrincipale.callback(4)
-            self.confirmModifyTourneesStep1()
         except Exception:
             self.fenetreConfigDeleteTournee.master.destroy()
             FenetrePrincipale.callback(6)
@@ -199,7 +197,6 @@ class Controller():
             self.model.supprimerEquipe(str(self.fenetreConfigSuppressTeam.listeSites.get()),self.fenetreConfigSuppressTeam.sbNumeroTeam.get())
             self.fenetreConfigSuppressTeam.master.destroy()
             FenetrePrincipale.callback(4)
-            self.confirmModifyTourneesStep1()
         except Exception:
             self.fenetreConfigSuppressTeam.master.destroy()
             FenetrePrincipale.callback(6)
@@ -209,24 +206,24 @@ class Controller():
             self.newController.run()
 
     def confirmAddTeamStep2(self,event):
-        self.fenetetreConfig2ModifySite=FenetreModifySite2(self.fenetreConfig1ModifySite.listeSites.get(),self.fenetreConfig1ModifySite.sbNbEquipe.get())
-        self.fenetetreConfig2ModifySite.confirmButton.bind("<Button-1>",self.confirmAddTeamStep3)
+        self.fenetreConfig2ModifySite=FenetreModifySite2(self.fenetreConfig1ModifySite.listeSites.get(),self.fenetreConfig1ModifySite.sbNbEquipe.get())
+        self.fenetreConfig2ModifySite.confirmButton.bind("<Button-1>",self.confirmAddTeamStep3)
         self.fenetreConfig1ModifySite.master.destroy()
 
     def confirmAddTeamStep3(self,event):
-        nomSite=self.fenetetreConfig2ModifySite.nomSite
-        nombreEquipes=self.fenetetreConfig2ModifySite.nombreEquipes
+        nomSite=self.fenetreConfig2ModifySite.nomSite
+        nombreEquipes=self.fenetreConfig2ModifySite.nombreEquipes
         valeursSpinbox=list()
         i=0
-        while i<len(self.fenetetreConfig2ModifySite.spinboxTournees):
-            valeur=int(self.fenetetreConfig2ModifySite.spinboxTournees[i].get())
+        while i<len(self.fenetreConfig2ModifySite.spinboxTournees):
+            valeur=int(self.fenetreConfig2ModifySite.spinboxTournees[i].get())
             valeursSpinbox.append(valeur)
             i=i+1
         self.fenetreConfig3ModifySite=FenetreInputNomsTournees(nomSite,nombreEquipes,0,valeursSpinbox)
 
 
         self.fenetreConfig3ModifySite.confirmButton.bind("<Button-1>",self.confirmAddTeamStep4)
-
+        self.fenetreConfig2ModifySite.master.destroy()
     def confirmAddTeamStep4(self,event):
         nomsToutesTournees=list()
 
@@ -246,7 +243,6 @@ class Controller():
             self.model.ajoutEquipe(nomSite,nomsToutesTournees)
             self.fenetreConfig3ModifySite.master.destroy()
             FenetrePrincipale.callback(4)
-            self.confirmModifyTourneesStep1()
         except Exception:
             self.fenetreConfig3ModifySite.master.destroy()
             FenetrePrincipale.callback(6)

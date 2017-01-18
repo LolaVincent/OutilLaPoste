@@ -36,7 +36,8 @@ class FenetreInputNomsTournees:
             nomsChaqueTournee=list()
             print("la valeur de nombreTourneesSurEquipe[i] est ")
             print(nombreTourneesSurEquipe[i])
-            partieTournee=LabelFrame(self.partieEquipe,text="Equipe n°"+ str(i))
+            
+            partieTournee=LabelFrame(self.partieEquipe,text="Equipe n°"+ str(i+1))
             partieTournee.grid()
             j=0
             while j<nombreTourneesSurEquipe[i]:

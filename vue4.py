@@ -20,7 +20,7 @@ class FenetreInputNombreTournees:
 
         i=0
         while i<nombreEquipes:
-            numeroEquipe=Label(self.partieEquipe, text="Equipe n°" + str(i) + ":")
+            numeroEquipe=Label(self.partieEquipe, text="Equipe n°" + str(i+1) + ":")
             numeroEquipe.grid(row=i,column=0)
             nombreTournees=Spinbox(self.partieEquipe, from_=1, to_=10)
             nombreTournees.grid(row=i,column=1)

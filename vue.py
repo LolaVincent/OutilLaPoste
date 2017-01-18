@@ -96,7 +96,7 @@ class FenetrePrincipale :
         for element in listeSites:
             variable_i=BooleanVar()
             bouton = Checkbutton(self.l, text=str(element), variable=variable_i)
-            bouton.grid(row=i)
+            bouton.grid(row=i,column=0)
             self.listVariableCheckButton.append(variable_i)
             self.listTextCheckButton.append(str(element))
             self.listCheckButton.append(bouton)
